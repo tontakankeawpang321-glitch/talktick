@@ -1,273 +1,790 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>โปรแกรมเปลี่ยนชื่อไฟล์เรียงลำดับ (รองรับทุกนามสกุล)</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Muay Thai AI - Live Center</title>
+    
+    <!-- Google Fonts: Kanit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800&family=Sarabun:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Kanit', 'sans-serif'],
+                        body: ['Sarabun', 'sans-serif'],
+                    },
+                    colors: {
+                        muayRed: '#DC2626',
+                        muayBlue: '#2563EB',
+                        muayGold: '#F59E0B',
+                        darkBg: '#0F172A',
+                        cardBg: '#1E293B',
+                        navBg: '#020617',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(100%)' },
+                            '100%': { transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-<style>
-:root{
-  --bg:#f5f5f5;
-  --surface:#ffffff;
-  --ink:#000;
-  --muted:#444;
-  --line:#ddd;
-  --brand:#2563eb;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:"IBM Plex Sans Thai",sans-serif;
-  background:var(--bg);
-  padding:20px;
-}
-.wrap{max-width:1100px;margin:auto}
-h1{font-size:20px;margin:0}
-.sub{font-size:13px;color:var(--muted)}
+    <style>
+        body {
+            background-color: #0F172A; /* darkBg */
+            color: white;
+            padding-bottom: 90px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .app-view { display: none; animation: fadeIn 0.3s ease-out; }
+        .app-view.active { display: block; }
+        .nav-item.active { color: #F59E0B; }
+        .nav-item.active i { stroke-width: 2.5px; }
+        
+        /* Updated Horizontal Calendar Styles */
+        .calendar-capsule {
+            flex-shrink: 0;
+            width: 48px;
+            height: 64px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background-color: #1E293B; /* cardBg */
+            border: 1px solid #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .calendar-capsule:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+        .calendar-capsule.active {
+            background-color: rgba(245, 158, 11, 0.2); 
+            border-color: #F59E0B;
+            color: #F59E0B;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+        }
+        .calendar-capsule.today {
+            background-color: #F59E0B;
+            color: black;
+            border-color: #F59E0B;
+        }
+        .calendar-capsule.active.today {
+            background-color: #F59E0B;
+            color: black;
+            border: 2px solid white;
+        }
 
-.grid{
-  display:grid;
-  grid-template-columns:1.2fr .8fr;
-  gap:14px;
-}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
-
-.card{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:14px;
-  overflow:hidden;
-}
-.card-h{
-  padding:14px;
-  border-bottom:1px solid var(--line);
-  font-weight:700;
-}
-.card-b{padding:14px}
-
-.btn{
-  border:1px solid var(--line);
-  background:#fff;
-  border-radius:12px;
-  padding:8px 12px;
-  cursor:pointer;
-  font-weight:600;
-}
-.btn.primary{
-  background:var(--brand);
-  color:#fff;
-  border:none;
-}
-.btn.danger{background:#fee;border-color:#f99}
-
-.drop{
-  border:2px dashed #ccc;
-  border-radius:14px;
-  padding:16px;
-  text-align:center;
-  margin-bottom:12px;
-}
-.list{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-}
-@media(max-width:600px){.list{grid-template-columns:repeat(2,1fr)}}
-
-.item{
-  border:1px solid var(--line);
-  border-radius:12px;
-  overflow:hidden;
-  position:relative;
-}
-.thumb{
-  height:120px;
-  background:#f0f0f0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:13px;
-  color:#555;
-}
-.thumb img{
-  max-width:100%;
-  max-height:100%;
-  object-fit:contain;
-}
-.meta{padding:8px}
-.old{font-size:12px;color:#666;word-break:break-all}
-.new{font-size:13px;font-weight:700;word-break:break-all}
-.idx{
-  position:absolute;
-  top:6px;right:6px;
-  background:#0008;
-  color:#fff;
-  font-size:11px;
-  padding:4px 6px;
-  border-radius:8px;
-}
-.form{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-@media(max-width:500px){.form{grid-template-columns:1fr}}
-.field{
-  width:100%;
-  padding:8px;
-  border-radius:10px;
-  border:1px solid var(--line);
-}
-.status{font-size:12px;color:#555;margin-top:8px}
-</style>
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        
+        .tech-card-bg {
+            background: radial-gradient(circle at center, #1E293B 0%, #0F172A 100%);
+        }
+        .date-badge {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
 </head>
+<body class="antialiased selection:bg-muayGold selection:text-black">
 
-<body>
-<div class="wrap">
-
-  <h1>โปรแกรมเปลี่ยนชื่อไฟล์เรียงลำดับ</h1>
-  <div class="sub">รองรับทุกนามสกุล • Export ZIP • ลากเรียงลำดับได้</div>
-
-  <div style="height:12px"></div>
-
-  <div class="grid">
-    <!-- LEFT -->
-    <div class="card">
-      <div class="card-h">1) เลือกไฟล์</div>
-      <div class="card-b">
-
-        <div class="drop" id="dropZone">
-          ลากไฟล์ทุกชนิดมาวางที่นี่<br>
-          หรือ <label class="btn" for="fileInput">เลือกไฟล์</label>
-          <input id="fileInput" type="file" multiple hidden>
+    <!-- Top App Bar -->
+    <div class="fixed top-0 w-full z-40 glass-nav border-b-0 border-b-gray-800 md:hidden h-16 flex items-center justify-between px-4 shadow-lg">
+        <div class="flex items-center gap-2">
+            <div class="bg-gradient-to-tr from-muayRed to-muayBlue p-1.5 rounded-lg">
+                <i data-lucide="swords" class="w-5 h-5 text-white"></i>
+            </div>
+            <!-- Updated Title -->
+            <span class="text-lg font-bold tracking-wide">มวยไทย</span>
         </div>
-
-        <div class="list" id="list"></div>
-
-      </div>
+        <div class="flex gap-3">
+            <div class="flex items-center gap-1 text-[10px] text-green-400 border border-green-900 bg-green-900/20 px-2 py-0.5 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                LIVE
+            </div>
+        </div>
     </div>
 
-    <!-- RIGHT -->
-    <div class="card">
-      <div class="card-h">2) ตั้งชื่อไฟล์</div>
-      <div class="card-b">
+    <!-- Main Content Wrapper -->
+    <div class="pt-20 md:pt-24 pb-4 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- === VIEW 1: HOME (Schedule) === -->
+        <div id="view-home" class="app-view active">
+            <!-- Hero Banner: ONE Friday Fights 138 -->
+            <div class="mb-6">
+                <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-800 aspect-[2/1] md:aspect-[3/1] group">
+                    <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-80 z-10"></div>
+                    <img src="https://placehold.co/1200x400/111/FFF?text=ONE+Friday+Fights+138" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-700">
+                    <div class="absolute bottom-0 left-0 p-6 z-20 w-full">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="bg-muayRed text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse">ถ่ายทอดสดวันนี้</span>
+                            <span class="text-xs text-gray-300 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> สนามมวยเวทีลุมพินี</span>
+                        </div>
+                        <h1 class="text-2xl md:text-4xl font-bold mb-2 text-white drop-shadow-lg">ONE ลุมพินี 138</h1>
+                        
+                        <!-- Cool Date Display -->
+                        <div class="inline-flex items-center gap-3 date-badge px-4 py-2 rounded-lg mb-2">
+                            <div class="bg-muayGold text-black font-bold px-2 py-0.5 rounded text-xs">JAN</div>
+                            <span id="currentDateDisplay" class="text-white font-mono text-sm tracking-wide">16 | 2026</span>
+                            <span class="text-gray-400 text-xs border-l border-gray-600 pl-3">วันศุกร์</span>
+                        </div>
 
-        <div class="form">
-          <div>
-            <label>Prefix</label>
-            <input class="field" id="prefix" placeholder="file_">
-          </div>
-          <div>
-            <label>เลขเริ่มต้น</label>
-            <input class="field" id="startNum" type="number" value="1">
-          </div>
-          <div>
-            <label>จำนวนหลัก</label>
-            <select class="field" id="pad">
-              <option value="2">2 (01)</option>
-              <option value="3" selected>3 (001)</option>
-              <option value="4">4 (0001)</option>
-              <option value="5">5 (00001)</option>
-            </select>
-          </div>
-          <div>
-            <label>นามสกุลไฟล์</label>
-            <select class="field" id="extMode">
-              <option value="keep" selected>คงเดิม</option>
-              <option value="jpg">.jpg</option>
-              <option value="png">.png</option>
-              <option value="pdf">.pdf</option>
-              <option value="zip">.zip</option>
-            </select>
-          </div>
+                        <p class="text-gray-400 text-xs md:text-sm line-clamp-1 mt-2">ป้อมเพชร vs เดโช | ศึกกู้ศรัทธามวยไทย</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header + AI Update Button -->
+            <div class="flex justify-between items-center mb-4 bg-gray-800/50 p-3 rounded-xl border border-gray-700/50">
+                <div>
+                    <h2 class="text-lg font-bold flex items-center gap-2 text-white">
+                        <span class="w-1 h-5 bg-muayGold rounded-full"></span>
+                        รายการแข่งขัน
+                    </h2>
+                    <span class="text-[10px] text-gray-400">อัปเดตล่าสุด: <span id="lastUpdate" class="text-gray-300">เมื่อสักครู่</span></span>
+                </div>
+                
+                <!-- AI Update All Button -->
+                <button onclick="updateAllSystem()" class="bg-gradient-to-r from-muayGold to-amber-600 hover:from-amber-400 hover:to-amber-700 text-black font-bold text-xs px-4 py-2 rounded-lg shadow-lg shadow-amber-900/40 flex items-center gap-2 transition active:scale-95">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    อัพเดทตารางจริง
+                </button>
+            </div>
+            
+            <div class="space-y-4 min-h-[200px]" id="scheduleContainer">
+                <!-- Data injected via JS -->
+            </div>
         </div>
 
-        <div style="height:10px"></div>
+        <!-- === VIEW 2: TECHNIQUES (35 Moves) === -->
+        <div id="view-techniques" class="app-view">
+            <div class="flex justify-between items-center mb-4 mt-2">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <span class="w-1 h-6 bg-muayBlue rounded-full"></span>
+                    คลังท่ามวยไทย (35 ท่า)
+                </h2>
+                <div class="text-xs text-gray-400 bg-gray-800 px-3 py-1 rounded-full border border-gray-700 font-mono" id="techProgressBadge">
+                    0/35
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="relative mb-4">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i data-lucide="search" class="w-5 h-5 text-gray-500"></i>
+                </div>
+                <input type="text" id="techSearch" onkeyup="searchTechniques()" 
+                       class="bg-gray-800 border border-gray-700 text-white text-sm rounded-xl focus:ring-muayGold focus:border-muayGold block w-full pl-10 p-3" 
+                       placeholder="ค้นหาแม่ไม้, ลูกไม้...">
+            </div>
 
-        <button class="btn primary" id="zipBtn">ดาวน์โหลด ZIP</button>
-        <button class="btn danger" id="clearBtn">ล้างทั้งหมด</button>
+            <!-- Filter Bar -->
+            <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-2 mb-4">
+                <button onclick="filterTechniques('all')" class="filter-btn active px-4 py-1.5 rounded-full text-xs font-bold bg-muayGold text-black whitespace-nowrap transition-all shadow-lg shadow-yellow-900/20">ทั้งหมด</button>
+                <button onclick="filterTechniques('mae_mai')" class="filter-btn px-4 py-1.5 rounded-full text-xs bg-gray-800 text-gray-400 border border-gray-700 whitespace-nowrap hover:bg-gray-700 transition">แม่ไม้ (15)</button>
+                <button onclick="filterTechniques('luk_mai')" class="filter-btn px-4 py-1.5 rounded-full text-xs bg-gray-800 text-gray-400 border border-gray-700 whitespace-nowrap hover:bg-gray-700 transition">ลูกไม้ (15)</button>
+                <button onclick="filterTechniques('counter')" class="filter-btn px-4 py-1.5 rounded-full text-xs bg-gray-800 text-gray-400 border border-gray-700 whitespace-nowrap hover:bg-gray-700 transition">กลแก้</button>
+            </div>
 
-        <div class="status" id="status">ยังไม่เลือกไฟล์</div>
-      </div>
+            <!-- New Grid Design: Name First -->
+            <div id="techniquesGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <!-- Cards injected via JS -->
+            </div>
+        </div>
+
+        <!-- === VIEW 3: STATS (Leaderboard) === -->
+        <div id="view-stats" class="app-view">
+            <div class="flex justify-between items-center mb-6 mt-2">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <span class="w-1 h-6 bg-muayRed rounded-full"></span>
+                    สถิติและอันดับ
+                </h2>
+                <span class="text-[10px] bg-gray-800 px-2 py-1 rounded text-gray-400 border border-gray-700">Season 2026</span>
+            </div>
+
+            <!-- Circle Progress -->
+            <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 mb-6 flex items-center justify-between shadow-lg">
+                <div>
+                    <h3 class="text-gray-400 text-sm mb-1">ความเชี่ยวชาญ</h3>
+                    <div class="text-3xl font-bold text-white mb-1"><span id="statsLearnedCount">0</span><span class="text-base text-gray-500">/35</span></div>
+                    <p class="text-xs text-muayGold" id="statsRankText">ระดับ: มือใหม่</p>
+                </div>
+                <div class="relative w-20 h-20">
+                    <svg class="w-full h-full transform -rotate-90">
+                        <circle cx="40" cy="40" r="36" stroke="#1f2937" stroke-width="8" fill="transparent"></circle>
+                        <circle id="progressCircle" cx="40" cy="40" r="36" stroke="#F59E0B" stroke-width="8" fill="transparent" stroke-dasharray="226" stroke-dashoffset="226" class="transition-all duration-1000"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center text-xs font-bold text-white" id="progressPercent">0%</div>
+                </div>
+            </div>
+            
+            <div class="flex items-end justify-center gap-2 mb-8 px-4" id="podiumContainer"></div>
+            <div id="leaderboardList" class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden divide-y divide-gray-700/50"></div>
+        </div>
+
+        <!-- === VIEW 4: PROFILE (Redesigned) === -->
+        <div id="view-profile" class="app-view">
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-2xl border border-gray-700 shadow-xl mb-6 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-muayRed via-muayGold to-muayBlue"></div>
+                
+                <div class="relative inline-block group cursor-pointer mb-4" onclick="document.getElementById('profileUpload').click()">
+                    <div class="w-24 h-24 rounded-full p-1 bg-gradient-to-br from-muayGold to-amber-700">
+                        <img id="profileImg" src="https://placehold.co/100x100/334155/FFF?text=User" class="w-full h-full rounded-full object-cover bg-gray-900 group-hover:opacity-75 transition">
+                    </div>
+                    <div class="absolute bottom-0 right-0 bg-gray-900 p-1.5 rounded-full border border-gray-700">
+                        <i data-lucide="camera" class="w-4 h-4 text-white"></i>
+                    </div>
+                </div>
+                <input type="file" id="profileUpload" class="hidden" accept="image/*" onchange="uploadProfileImage(this)">
+                
+                <h2 id="profileName" class="text-2xl font-bold text-white mb-1">สมชาย รักมวยไทย</h2>
+                <div class="inline-flex items-center gap-1 px-3 py-1 bg-gray-800 rounded-full border border-gray-600 text-xs text-muayGold mb-4">
+                    <i data-lucide="medal" class="w-3 h-3"></i>
+                    <span id="profileRankDisplay">Nak Muay (นักมวยฝึกหัด)</span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 border-t border-gray-700 pt-4">
+                    <div>
+                        <div class="text-lg font-bold text-white" id="statCheckinsProfile">0</div>
+                        <div class="text-[10px] text-gray-400">วันฝึกซ้อม</div>
+                    </div>
+                    <div class="border-l border-gray-700">
+                        <div class="text-lg font-bold text-muayGold" id="statStreakProfile">0</div>
+                        <div class="text-[10px] text-gray-400">ต่อเนื่อง</div>
+                    </div>
+                    <div class="border-l border-gray-700">
+                        <div class="text-lg font-bold text-blue-400" id="statLearnedProfile">0</div>
+                        <div class="text-[10px] text-gray-400">ท่าที่รู้</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar (Horizontal 30 Days) -->
+            <div class="bg-gray-800 p-4 rounded-2xl border border-gray-700 mb-6">
+                <div class="flex justify-between items-center mb-4 px-2">
+                    <span class="text-sm font-bold text-gray-300" id="currentMonthYear">มกราคม 2569</span>
+                    <div class="text-[10px] text-gray-400">แตะวันที่เพื่อลงชื่อ</div>
+                </div>
+                <!-- Horizontal Scroll Container -->
+                <div class="flex overflow-x-auto gap-3 pb-2 hide-scrollbar" id="calendarGrid">
+                    <!-- JS Injected Capsules -->
+                </div>
+            </div>
+            
+            <!-- Horizontal Action Buttons -->
+            <div class="flex justify-center items-center gap-3">
+                <button onclick="checkInToday()" class="flex-1 bg-muayRed/20 hover:bg-muayRed/30 border border-muayRed/50 text-white py-2 rounded-lg text-xs font-bold transition flex flex-col items-center justify-center gap-1 h-14">
+                    <i data-lucide="check-circle" class="w-4 h-4 text-muayRed"></i>
+                    ลงชื่อวันนี้
+                </button>
+                <button onclick="document.getElementById('profileUpload').click()" class="flex-1 bg-gray-700/50 hover:bg-gray-700 border border-gray-600 text-gray-300 py-2 rounded-lg text-xs font-bold transition flex flex-col items-center justify-center gap-1 h-14">
+                    <i data-lucide="image" class="w-4 h-4"></i>
+                    เปลี่ยนรูป
+                </button>
+                <button onclick="clearLocalData()" class="flex-1 bg-gray-700/50 hover:bg-red-900/30 border border-gray-600 hover:border-red-900 text-gray-300 hover:text-red-400 py-2 rounded-lg text-xs font-bold transition flex flex-col items-center justify-center gap-1 h-14">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    ล้างข้อมูล
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <!-- AI Loading Overlay -->
+    <div id="aiOverlay" class="fixed inset-0 z-[70] hidden flex flex-col items-center justify-center bg-black/80 text-center px-6 transition-opacity duration-300">
+        <div class="relative mb-6">
+            <div class="w-24 h-24 rounded-full border-4 border-muayGold border-t-transparent animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center"><i data-lucide="server" class="w-8 h-8 text-white animate-pulse"></i></div>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2">กำลังเชื่อมต่อ...</h3>
+        <p class="text-gray-400 text-sm">ดึงข้อมูลจาก watch.onefc.com...</p>
+    </div>
 
-<script>
-const fileInput=document.getElementById('fileInput');
-const dropZone=document.getElementById('dropZone');
-const listEl=document.getElementById('list');
-const prefixEl=document.getElementById('prefix');
-const startNumEl=document.getElementById('startNum');
-const padEl=document.getElementById('pad');
-const extModeEl=document.getElementById('extMode');
-const zipBtn=document.getElementById('zipBtn');
-const clearBtn=document.getElementById('clearBtn');
-const statusEl=document.getElementById('status');
+    <!-- Modal (Detail View & Video) -->
+    <div id="infoModal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-black/90 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center">
+                <div class="relative transform overflow-hidden bg-gray-900 text-left shadow-2xl transition-all sm:w-full sm:max-w-lg rounded-2xl border border-gray-700">
+                    <button onclick="closeModal()" class="absolute right-4 top-4 text-white bg-black/50 rounded-full p-2 z-20 hover:bg-black/80">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                    <!-- Modal Content -->
+                    <div class="relative h-64 bg-black">
+                        <img id="modalImg" src="" class="w-full h-full object-cover opacity-80">
+                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-6 right-6">
+                            <div id="modalTags" class="mb-2"></div>
+                            <h3 id="modalTitle" class="text-3xl font-bold text-white shadow-black drop-shadow-md">Title</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="bg-gray-800/50 p-4 rounded-xl mb-4 border border-gray-700/50">
+                            <h4 class="text-muayGold font-bold text-sm mb-2 flex items-center gap-2"><i data-lucide="book-open" class="w-4 h-4"></i> คำอธิบาย</h4>
+                            <p id="modalDesc" class="text-gray-300 text-sm leading-relaxed font-body">Description...</p>
+                        </div>
 
-let items=[];
+                        <!-- Video Button -->
+                        <button onclick="playDemoVideo()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl mb-6 shadow-lg shadow-red-900/30 flex items-center justify-center gap-2 transition active:scale-95">
+                            <i data-lucide="play-circle" class="w-5 h-5"></i> ดูวิดีโอสาธิต (Demo)
+                        </button>
+                        
+                        <!-- AI Stats -->
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5 text-gray-400"><span>พลังทำลาย (Power)</span><span id="statPower" class="font-mono text-muayRed">0%</span></div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5"><div id="barPower" class="bg-muayRed h-1.5 rounded-full shadow-[0_0_8px_rgba(220,38,38,0.5)]" style="width: 0%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5 text-gray-400"><span>ความยาก (Difficulty)</span><span id="statDiff" class="font-mono text-muayBlue">0/100</span></div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5"><div id="barDiff" class="bg-muayBlue h-1.5 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.5)]" style="width: 0%"></div></div>
+                            </div>
+                        </div>
 
-const padNum=(n,w)=>String(n).padStart(w,'0');
-const getExt=(n)=>n.includes('.')?n.split('.').pop():'';
+                        <div class="mt-6 flex items-center justify-center gap-2 text-green-400 bg-green-900/20 p-2 rounded-lg border border-green-900/50 text-xs">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            <span>บันทึกการเรียนรู้เรียบร้อยแล้ว</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-function computeNames(){
-  const start=+startNumEl.value;
-  const pad=+padEl.value;
-  items.forEach((it,i)=>{
-    const ext=extModeEl.value==='keep'?getExt(it.file.name):extModeEl.value;
-    it.newName=`${prefixEl.value}${padNum(start+i,pad)}${ext?'.'+ext:''}`;
-  });
-}
+    <!-- Bottom Navigation -->
+    <div class="fixed bottom-0 w-full glass-nav z-50 md:hidden shadow-up pb-safe">
+        <div class="grid grid-cols-4 items-center h-16">
+            <button onclick="switchTab('home')" class="nav-item active flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-muayGold transition" id="nav-home">
+                <i data-lucide="calendar-days" class="w-6 h-6 mb-1"></i><span class="text-[10px] font-medium">ตารางแข่ง</span>
+            </button>
+            <button onclick="switchTab('techniques')" class="nav-item flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-muayGold transition" id="nav-techniques">
+                <i data-lucide="book-open" class="w-6 h-6 mb-1"></i><span class="text-[10px] font-medium">ท่ามวย</span>
+            </button>
+            <button onclick="switchTab('stats')" class="nav-item flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-muayGold transition" id="nav-stats">
+                <i data-lucide="bar-chart-2" class="w-6 h-6 mb-1"></i><span class="text-[10px] font-medium">สถิติ</span>
+            </button>
+            <button onclick="switchTab('profile')" class="nav-item flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-muayGold transition" id="nav-profile">
+                <i data-lucide="user" class="w-6 h-6 mb-1"></i><span class="text-[10px] font-medium">ฉัน</span>
+            </button>
+        </div>
+    </div>
 
-function render(){
-  computeNames();
-  listEl.innerHTML='';
-  items.forEach((it,i)=>{
-    const isImg=it.file.type.startsWith('image/');
-    const div=document.createElement('div');
-    div.className='item';
-    div.innerHTML=`
-      <div class="idx">#${i+1}</div>
-      <div class="thumb">
-        ${isImg?`<img src="${it.url}">`:`📄 ${it.file.name}`}
-      </div>
-      <div class="meta">
-        <div class="old">${it.file.name}</div>
-        <div class="new">${it.newName}</div>
-      </div>`;
-    listEl.appendChild(div);
-  });
-  statusEl.textContent=items.length?`ไฟล์ทั้งหมด ${items.length}`:'ยังไม่เลือกไฟล์';
-}
+    <!-- JavaScript -->
+    <script>
+        lucide.createIcons();
 
-function addFiles(files){
-  [...files].forEach(f=>{
-    items.push({file:f,url:URL.createObjectURL(f),newName:''});
-  });
-  render();
-}
+        // --- CONSTANTS ---
+        const KEY_USER = 'muay_user_name';
+        const KEY_LOGS = 'muay_training_logs';
+        const KEY_PROFILE_IMG = 'muay_profile_img';
+        const KEY_LAST_UPDATE = 'muay_last_update_date_v3';
+        const KEY_LEARNED_TECHS = 'muay_learned_techs';
 
-dropZone.ondragover=e=>{e.preventDefault()};
-dropZone.ondrop=e=>{e.preventDefault();addFiles(e.dataTransfer.files)};
-fileInput.onchange=e=>addFiles(e.target.files);
+        // --- REAL DATA: ONE Friday Fights 138 (Jan 16, 2026) ---
+        let currentMatches = [
+            { id: 13801, event: "ONE ลุมพินี 138 (คู่เอก)", red: "ป้อมเพชร พี.เค.แสนชัยฯ", blue: "เดโช ป.บริรักษ์", time: "21:30", date: "ศุกร์ 16 ม.ค. 2569", channel: "Ch7HD กด 35", ai_red: 55, ai_blue: 45, img: "https://placehold.co/600x300/111/FFF?text=Main+Event" },
+            { id: 13802, event: "ONE ลุมพินี 138 (คู่รอง)", red: "ชาติพยัคฆ์ ศักดิ์สตูล", blue: "อายัด อัลบัดร์", time: "21:00", date: "ศุกร์ 16 ม.ค. 2569", channel: "Ch7HD กด 35", ai_red: 60, ai_blue: 40, img: "https://placehold.co/600x300/222/FFF?text=Co-Main" },
+            { id: 13803, event: "ONE ลุมพินี 138", red: "บราซิล เอกเมืองนนท์", blue: "ยูเบด ฮุสเซน", time: "20:30", date: "ศุกร์ 16 ม.ค. 2569", channel: "Facebook / YouTube", ai_red: 45, ai_blue: 55, img: "https://placehold.co/600x300/333/FFF?text=Flyweight" },
+            { id: 13804, event: "ONE ลุมพินี 138", red: "ทองลำพูน เอฟ.เอ.กรุ๊ป", blue: "เกาะเต่า เพชรสมนึก", time: "20:00", date: "ศุกร์ 16 ม.ค. 2569", channel: "Facebook / YouTube", ai_red: 50, ai_blue: 50, img: "https://placehold.co/600x300/333/FFF?text=Strawweight" },
+            { id: 13805, event: "ONE ลุมพินี 138", red: "เพชรการ์ฟิลด์ จิตรเมืองนนท์", blue: "โลแกน ชาน", time: "19:30", date: "ศุกร์ 16 ม.ค. 2569", channel: "Facebook / YouTube", ai_red: 65, ai_blue: 35, img: "https://placehold.co/600x300/333/FFF?text=Bantamweight" },
+            { id: 13806, event: "ONE ลุมพินี 138", red: "เพชรนิลมังกร น้ำแข็งไอซ์แลนด์", blue: "โตโยต้า อีเกิลมวยไทย", time: "19:00", date: "ศุกร์ 16 ม.ค. 2569", channel: "Facebook / YouTube", ai_red: 50, ai_blue: 50, img: "https://placehold.co/600x300/333/FFF?text=Atomweight" },
+            { id: 13807, event: "ONE ลุมพินี 138", red: "ริฟดีน มาสดอร์", blue: "โมฮัมหมัด เรโด", time: "18:30", date: "ศุกร์ 16 ม.ค. 2569", channel: "Facebook / YouTube", ai_red: 58, ai_blue: 42, img: "https://placehold.co/600x300/333/FFF?text=Opener" }
+        ];
 
-clearBtn.onclick=()=>{items=[];render()};
+        let fighterStats = [
+            { rank: 1, name: "รถถัง", wins: 260, ko: 105, img: "https://placehold.co/50x50/1e293b/FFF?text=1" },
+            { rank: 2, name: "ซุปเปอร์เล็ก", wins: 190, ko: 78, img: "https://placehold.co/50x50/1e293b/FFF?text=2" },
+            { rank: 3, name: "ตะวันฉาย", wins: 135, ko: 60, img: "https://placehold.co/50x50/1e293b/FFF?text=3" },
+            { rank: 4, name: "ป้อมเพชร", wins: 110, ko: 48, img: "https://placehold.co/50x50/1e293b/FFF?text=4" },
+            { rank: 5, name: "ชาติพยัคฆ์", wins: 95, ko: 30, img: "https://placehold.co/50x50/1e293b/FFF?text=5" },
+        ];
 
-zipBtn.onclick=async()=>{
-  if(!items.length)return alert('ไม่มีไฟล์');
-  const zip=new JSZip();
-  const folder=zip.folder('renamed-files');
-  for(const it of items){
-    folder.file(it.newName, await it.file.arrayBuffer());
-  }
-  const blob=await zip.generateAsync({type:'blob'});
-  saveAs(blob,'renamed_files.zip');
-};
-</script>
+        // 35 Muay Thai Techniques (Full Set)
+        let techniquesData = [
+            // Mae Mai (15)
+            { id: 'm1', name: "สลับฟันปลา", category: "mae_mai", desc: "การหลบหลีกอาวุธคู่ต่อสู้และเข้าวงในเพื่อโจมตี", power: 75, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Salab+Fan+Pla" },
+            { id: 'm2', name: "ปักษาแหวกรัง", category: "mae_mai", desc: "การปัดป้องและแหวกการ์ดเพื่อเข้าทำลายจังหวะ", power: 70, diff: 65, img: "https://placehold.co/400x300/1e293b/FFF?text=Paksa" },
+            { id: 'm3', name: "ชวาซัดหอก", category: "mae_mai", desc: "การศอกคู่ใส่ลำตัวคู่ต่อสู้ เพื่อหยุดการบุก", power: 85, diff: 70, img: "https://placehold.co/400x300/1e293b/FFF?text=Chawa" },
+            { id: 'm4', name: "อิเหนาแทงกริช", category: "mae_mai", desc: "การใช้ศอกแทงเข้าซี่โครงในระยะประชิด", power: 88, diff: 75, img: "https://placehold.co/400x300/1e293b/FFF?text=Inao" },
+            { id: 'm5', name: "ยอเขาพระสุเมรุ", category: "mae_mai", desc: "การก้มหลบหมัดแล้วเสยหมัดขึ้นปลายคาง", power: 90, diff: 80, img: "https://placehold.co/400x300/1e293b/FFF?text=Yo+Khao" },
+            { id: 'm6', name: "ตาเถรค้ำฝัก", category: "mae_mai", desc: "การปัดป้องการเตะสูงด้วยแขนและหมัด", power: 65, diff: 50, img: "https://placehold.co/400x300/1e293b/FFF?text=Ta+Then" },
+            { id: 'm7', name: "มอญยันหลัก", category: "mae_mai", desc: "ถีบยอดอกหรือท้องเพื่อสกัดคู่ต่อสู้", power: 70, diff: 45, img: "https://placehold.co/400x300/1e293b/FFF?text=Mon+Yan" },
+            { id: 'm8', name: "ปักลูกทอย", category: "mae_mai", desc: "การศอกกลับหลังเมื่อคู่ต่อสู้บุกเข้ามา", power: 92, diff: 85, img: "https://placehold.co/400x300/1e293b/FFF?text=Pak+Luk" },
+            { id: 'm9', name: "จระเข้ฟาดหาง", category: "mae_mai", desc: "หมุนตัวเตะฟาดส้นเท้าเข้าที่คออย่างรุนแรง", power: 95, diff: 90, img: "https://placehold.co/400x300/1e293b/FFF?text=Chorake" },
+            { id: 'm10', name: "หักงวงไอยรา", category: "mae_mai", desc: "การจับขาคู่ต่อสู้แล้วฟันศอกที่โคนขา", power: 85, diff: 70, img: "https://placehold.co/400x300/1e293b/FFF?text=Hak+Nguang" },
+            { id: 'm11', name: "นาคาบิดหาง", category: "mae_mai", desc: "การบิดขาคู่ต่อสู้เมื่อจับได้เพื่อทำลายสมดุล", power: 80, diff: 75, img: "https://placehold.co/400x300/1e293b/FFF?text=Naka" },
+            { id: 'm12', name: "วิรุฬหกกลับ", category: "mae_mai", desc: "การถีบกลับหลัง (Back kick) เพื่อโจมตี", power: 88, diff: 82, img: "https://placehold.co/400x300/1e293b/FFF?text=Wirun" },
+            { id: 'm13', name: "ดับชวาลา", category: "mae_mai", desc: "การชกหมัดตรงไปที่ใบหน้าเพื่อปิดตา", power: 80, diff: 40, img: "https://placehold.co/400x300/1e293b/FFF?text=Dap+Chawala" },
+            { id: 'm14', name: "ขุนยักษ์จับลิง", category: "mae_mai", desc: "การป้องกันหมัด-เตะ-ศอก-เข่า พร้อมกัน", power: 85, diff: 95, img: "https://placehold.co/400x300/1e293b/FFF?text=Khun+Yak+Jub+Ling" },
+            { id: 'm15', name: "หักคอเอราวัณ", category: "mae_mai", desc: "การโน้มคอคู่ต่อสู้ลงมาเพื่อตีเข่า", power: 90, diff: 65, img: "https://placehold.co/400x300/1e293b/FFF?text=Hak+Kor" },
+            
+            // Look Mai (15)
+            { id: 'l1', name: "เอราวัณเสยงา", category: "luk_mai", desc: "หมัดเสยปลายคางในระยะประชิด", power: 90, diff: 50, img: "https://placehold.co/400x300/1e293b/FFF?text=Erawan+Soei" },
+            { id: 'l2', name: "บาทาลูบพักตร์", category: "luk_mai", desc: "การถีบเข้าที่ใบหน้าเพื่อทำลายสมาธิ", power: 75, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Bata+Lup" },
+            { id: 'l3', name: "ขุนยักษ์พานาง", category: "luk_mai", desc: "การกอดรัดและทุ่มคู่ต่อสู้", power: 85, diff: 80, img: "https://placehold.co/400x300/1e293b/FFF?text=Khun+Yak" },
+            { id: 'l4', name: "พระรามน้าวศร", category: "luk_mai", desc: "การศอกกลับคู่ โดยการจับแขนคู่ต่อสู้ไว้", power: 88, diff: 85, img: "https://placehold.co/400x300/1e293b/FFF?text=Phra+Ram" },
+            { id: 'l5', name: "ไกรสรข้ามห้วย", category: "luk_mai", desc: "การกระโดดถีบเข้าที่คอหรือใบหน้า", power: 92, diff: 90, img: "https://placehold.co/400x300/1e293b/FFF?text=Kraisorn" },
+            { id: 'l6', name: "กวางเหลียวหลัง", category: "luk_mai", desc: "การเตะหรือถีบกลับหลังขณะคู่ต่อสู้เผลอ", power: 85, diff: 80, img: "https://placehold.co/400x300/1e293b/FFF?text=Kwang" },
+            { id: 'l7', name: "หิรัญม้วนแผ่นดิน", category: "luk_mai", desc: "การศอกกลับหลังในลักษณะม้วนตัว", power: 95, diff: 90, img: "https://placehold.co/400x300/1e293b/FFF?text=Hiran" },
+            { id: 'l8', name: "นาคมุดบาดาล", category: "luk_mai", desc: "การก้มตัวลอดใต้เท้าคู่ต่อสู้แล้วถีบขาพับ", power: 80, diff: 85, img: "https://placehold.co/400x300/1e293b/FFF?text=Nak+Mut" },
+            { id: 'l9', name: "หนุมานถวายแหวน", category: "luk_mai", desc: "การชกเสยหมัดคู่เข้าที่ปลายคาง", power: 92, diff: 70, img: "https://placehold.co/400x300/1e293b/FFF?text=Hanuman" },
+            { id: 'l10', name: "ญวนทอดแห", category: "luk_mai", desc: "การเตะตัดขาคู่ต่อสู้ให้เสียหลัก", power: 75, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Yuan+Thot" },
+            { id: 'l11', name: "ทยางค้ำเสา", category: "luk_mai", desc: "การถีบยันไปที่หน้าขาคู่ต่อสู้", power: 65, diff: 40, img: "https://placehold.co/400x300/1e293b/FFF?text=Thayae" },
+            { id: 'l12', name: "หงส์ปีกหัก", category: "luk_mai", desc: "การศอกลงที่หัวไหล่หรือต้นแขน", power: 80, diff: 65, img: "https://placehold.co/400x300/1e293b/FFF?text=Hong+Pik" },
+            { id: 'l13', name: "สักพวงมาลัย", category: "luk_mai", desc: "การแทงเข่าตรงสู่หน้าอกแล้วตามด้วยศอก", power: 88, diff: 75, img: "https://placehold.co/400x300/1e293b/FFF?text=Sak+Phuang" },
+            { id: 'l14', name: "เถรกวาดลาน", category: "luk_mai", desc: "การเตะกวาดล่างให้คู่ต่อสู้ล้มทั้งยืน", power: 85, diff: 80, img: "https://placehold.co/400x300/1e293b/FFF?text=Then+Kwad" },
+            { id: 'l15', name: "ฝานลูกบวบ", category: "luk_mai", desc: "การศอกเฉียงลงที่ใบหน้า", power: 82, diff: 55, img: "https://placehold.co/400x300/1e293b/FFF?text=Fan+Luk" },
+
+            // Counters (5)
+            { id: 'c1', name: "แก้หมัดด้วยศอก", category: "counter", desc: "ปัดหมัดแล้วสวนด้วยศอกทันที", power: 80, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Counter+Elbow" },
+            { id: 'c2', name: "แก้เตะด้วยถีบ", category: "counter", desc: "ใช้ลูกถีบสกัดเมื่อคู่ต่อสู้เริ่มยกขาเตะ", power: 75, diff: 55, img: "https://placehold.co/400x300/1e293b/FFF?text=Counter+Teep" },
+            { id: 'c3', name: "แก้เข่าด้วยศอก", category: "counter", desc: "เมื่อคู่ต่อสู้ตีเข่า ให้ปักศอกลงที่ขา", power: 85, diff: 70, img: "https://placehold.co/400x300/1e293b/FFF?text=Counter+Knee" },
+            { id: 'c4', name: "ฉากหลบสวนหมัด", category: "counter", desc: "ก้าวฉากออกข้างแล้วสวนหมัดตรง", power: 80, diff: 65, img: "https://placehold.co/400x300/1e293b/FFF?text=Side+Step" },
+            { id: 'c5', name: "จับขาแล้วไถนา", category: "counter", desc: "จับขาคู่ต่อสู้แล้วดันไปข้างหน้าให้เสียหลัก", power: 70, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Catch+Leg" }
+        ];
+
+        // --- WORKER CODE ---
+        const workerCode = `
+            self.onmessage = function(e) {
+                setTimeout(() => {
+                    self.postMessage({ status: 'success' });
+                }, 2000);
+            };
+        `;
+
+        function updateAllSystem() {
+            const today = new Date().toISOString().split('T')[0];
+            const lastUpdate = localStorage.getItem(KEY_LAST_UPDATE);
+
+            if (lastUpdate === today) {
+                alert("⚠️ คุณได้อัพเดทข้อมูลประจำวันไปแล้ว\n(ระบบอนุญาตให้อัพเดท 1 ครั้งต่อวัน)");
+                return;
+            }
+
+            const overlay = document.getElementById('aiOverlay');
+            overlay.classList.remove('hidden');
+
+            const blob = new Blob([workerCode], { type: "application/javascript" });
+            const worker = new Worker(URL.createObjectURL(blob));
+
+            worker.postMessage({}); // Start worker
+
+            worker.onmessage = function(e) {
+                renderSchedule(currentMatches);
+                renderLeaderboard();
+                
+                const now = new Date();
+                document.getElementById('lastUpdate').innerText = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+                localStorage.setItem(KEY_LAST_UPDATE, today);
+                
+                overlay.classList.add('hidden');
+                worker.terminate();
+                alert("✅ อัพเดทข้อมูลจาก watch.onefc.com เรียบร้อยแล้ว");
+            };
+        }
+
+        // --- FUNCTIONS ---
+        function clearLocalData() {
+            if(confirm('ยืนยันการล้างข้อมูลทั้งหมดในเครื่อง?\n(ประวัติการใช้งานและข้อมูลส่วนตัวจะหายไป)')) {
+                localStorage.clear();
+                alert('ล้างข้อมูลเรียบร้อย');
+                location.reload();
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + tabName).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active', 'text-muayGold');
+                el.classList.add('text-gray-500');
+            });
+            document.getElementById('nav-' + tabName).classList.add('active', 'text-muayGold');
+            window.scrollTo(0, 0);
+            if(tabName === 'profile' || tabName === 'stats' || tabName === 'techniques') loadUserData();
+        }
+
+        function renderSchedule(data) {
+            const container = document.getElementById('scheduleContainer');
+            container.innerHTML = '';
+            data.forEach(f => {
+                container.innerHTML += `
+                    <div class="bg-gray-800 rounded-2xl p-4 flex gap-4 items-center border border-gray-700/50 shadow-sm active:scale-[0.98] transition">
+                        <img src="${f.img}" class="w-16 h-16 rounded-full object-cover border-2 border-gray-600">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="font-bold text-white truncate text-base">${f.red} vs ${f.blue}</h3>
+                                <span class="bg-red-900/30 text-red-400 text-[10px] px-1.5 py-0.5 rounded border border-red-900/50">สด</span>
+                            </div>
+                            <div class="text-xs text-gray-400 mb-2 flex flex-col gap-1">
+                                <span class="font-bold text-white">${f.event}</span>
+                                <span class="flex items-center gap-1 text-muayGold"><i data-lucide="calendar" class="w-3 h-3"></i> ${f.date}</span>
+                                <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${f.time} • <i data-lucide="tv" class="w-3 h-3 ml-1"></i> ${f.channel}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-[10px] font-mono">
+                                <span class="text-muayRed w-6 text-right">${f.ai_red}%</span>
+                                <div class="flex-1 h-1.5 bg-gray-700 rounded-full flex overflow-hidden">
+                                    <div class="bg-muayRed h-full transition-all duration-1000" style="width: ${f.ai_red}%"></div>
+                                    <div class="bg-muayBlue h-full transition-all duration-1000" style="width: ${f.ai_blue}%"></div>
+                                </div>
+                                <span class="text-muayBlue w-6">${f.ai_blue}%</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderLeaderboard() {
+            const podium = document.getElementById('podiumContainer');
+            const list = document.getElementById('leaderboardList');
+            // Mock render logic for brevity
+            podium.innerHTML = `<div class="text-center text-gray-500 text-sm w-full py-4">🏆 อันดับนักชกยอดเยี่ยมประจำสัปดาห์</div>`;
+            list.innerHTML = fighterStats.map(f => `
+                <div class="px-4 py-3 flex items-center justify-between hover:bg-gray-700/30 transition">
+                    <div class="flex items-center gap-3">
+                        <span class="text-gray-500 font-mono w-4 text-center">${f.rank}</span>
+                        <span class="text-sm font-bold text-white">${f.name}</span>
+                    </div>
+                    <div class="text-xs text-right text-gray-400">${f.wins} ชนะ</div>
+                </div>
+            `).join('');
+        }
+
+        // --- TECHNIQUES LOGIC ---
+        function getSearchQuery() {
+            const searchInput = document.getElementById('techSearch');
+            return searchInput ? searchInput.value : '';
+        }
+        
+        function renderTechniques(filter = 'all', searchQuery = '') {
+            const container = document.getElementById('techniquesGrid');
+            container.innerHTML = '';
+            
+            // Get Learned IDs
+            const learnedIds = JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS) || '[]');
+
+            // Update Badge
+            document.getElementById('techProgressBadge').innerText = `${learnedIds.length}/${techniquesData.length}`;
+
+            // Filter
+            const filtered = techniquesData.filter(t => 
+                (filter === 'all' || t.category === filter) && 
+                (t.name.includes(searchQuery) || t.desc.includes(searchQuery))
+            );
+
+            // Update Filter Buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.getAttribute('onclick').includes(filter)) {
+                    btn.classList.add('bg-muayGold', 'text-black', 'font-bold');
+                    btn.classList.remove('bg-gray-800', 'text-gray-400');
+                } else {
+                    btn.classList.remove('bg-muayGold', 'text-black', 'font-bold');
+                    btn.classList.add('bg-gray-800', 'text-gray-400');
+                }
+            });
+
+            filtered.forEach(t => {
+                const isLearned = learnedIds.includes(t.id);
+                const checkMark = isLearned ? `<div class="absolute top-2 right-2 bg-green-500 text-black w-5 h-5 flex items-center justify-center rounded-full z-10 shadow-lg"><i data-lucide="check" class="w-3 h-3"></i></div>` : '';
+                const opacity = isLearned ? 'opacity-100 ring-1 ring-green-500/50' : 'opacity-90';
+                
+                // New Card Design: Text First, Minimal Image hint
+                container.innerHTML += `
+                    <div onclick="openModal('${t.id}')" class="tech-card-bg rounded-2xl p-4 border border-gray-700 hover:border-muayGold transition cursor-pointer flex flex-col justify-between h-32 relative group overflow-hidden ${opacity}">
+                        ${checkMark}
+                        
+                        <!-- Hover Background Reveal -->
+                        <div class="absolute inset-0 opacity-0 group-hover:opacity-20 transition duration-500 bg-[url('${t.img}')] bg-cover bg-center z-0"></div>
+                        
+                        <div class="relative z-10">
+                            <span class="text-[10px] text-muayGold font-bold uppercase tracking-wider mb-1 block">${t.category.replace('_', ' ')}</span>
+                            <h4 class="font-bold text-lg text-white leading-tight">${t.name}</h4>
+                        </div>
+                        
+                        <div class="relative z-10 flex justify-between items-end mt-2">
+                            <div class="text-[10px] text-gray-400">Power: ${t.power}</div>
+                            <i data-lucide="arrow-right-circle" class="w-5 h-5 text-gray-500 group-hover:text-muayGold transition"></i>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function filterTechniques(cat) { renderTechniques(cat, getSearchQuery()); }
+        function searchTechniques() { renderTechniques('all', getSearchQuery()); }
+
+        function openModal(id) {
+            const t = techniquesData.find(x => x.id === id);
+            if(!t) return;
+
+            // SAVE LEARNING PROGRESS
+            let learnedIds = JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS) || '[]');
+            if(!learnedIds.includes(id)) {
+                learnedIds.push(id);
+                localStorage.setItem(KEY_LEARNED_TECHS, JSON.stringify(learnedIds));
+                renderTechniques(); // Refresh grid badges
+            }
+
+            document.getElementById('modalTitle').innerText = t.name;
+            document.getElementById('modalDesc').innerText = t.desc;
+            document.getElementById('modalImg').src = t.img;
+            document.getElementById('statPower').innerText = t.power + '%';
+            document.getElementById('barPower').style.width = t.power + '%';
+            document.getElementById('statDiff').innerText = t.diff + '/100';
+            document.getElementById('barDiff').style.width = t.diff + '%';
+            
+            let catText = t.category === 'mae_mai' ? "แม่ไม้มวยไทย" : (t.category === 'luk_mai' ? "ลูกไม้มวยไทย" : "กลมวยแก้");
+            document.getElementById('modalTags').innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-muayGold text-black shadow-lg">${catText}</span>`;
+            
+            document.getElementById('infoModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+        
+        function closeModal() { document.getElementById('infoModal').classList.add('hidden'); document.body.style.overflow = ''; }
+        function playDemoVideo() { alert('กำลังโหลดวิดีโอสาธิต...'); }
+
+        // --- PROFILE & STATS LOGIC ---
+        function loadUserData() {
+            // Logs & Calendar
+            const container = document.getElementById('calendarGrid');
+            container.innerHTML = '';
+            const logs = JSON.parse(localStorage.getItem(KEY_LOGS) || '[]');
+            const daysInMonth = new Date(2026, 1, 0).getDate(); 
+            for(let i=1; i<=daysInMonth; i++) {
+                const el = document.createElement('div');
+                el.className = 'calendar-capsule';
+                el.innerHTML = `
+                    <span class="text-[10px] text-gray-400 font-bold mb-1">${getDayName(i)}</span>
+                    <span class="text-sm font-bold">${i}</span>
+                `;
+                
+                if(i === 16) el.classList.add('today'); 
+                
+                const dateStr = `2026-01-${String(i).padStart(2,'0')}`;
+                
+                if(logs.includes(dateStr)) el.classList.add('active');
+                
+                el.onclick = () => toggleCheckIn(dateStr);
+                
+                container.appendChild(el);
+            }
+
+            // Calculate Level & Streak
+            let streak = 0; 
+            if(logs.length > 0) streak = logs.length; 
+
+            // Techniques Stats
+            const learnedIds = JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS) || '[]');
+            const learnedCount = learnedIds.length;
+            const totalTechs = techniquesData.length;
+            const progressPercent = Math.round((learnedCount / totalTechs) * 100);
+            
+            // Calculate Rank/Level Logic
+            let rankText = "Nak Muay (นักมวยฝึกหัด)";
+            if(learnedCount > 10 && logs.length > 5) rankText = "Kru (ครูมวย)";
+            else if(learnedCount > 5) rankText = "Fighter (นักสู้)";
+
+            // Update Profile View
+            document.getElementById('statCheckinsProfile').innerText = logs.length;
+            document.getElementById('statStreakProfile').innerText = streak;
+            document.getElementById('statLearnedProfile').innerText = learnedCount;
+            document.getElementById('profileRankDisplay').innerText = rankText;
+
+            // Update Stats View (Circle Chart)
+            const circle = document.getElementById('progressCircle');
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            const offset = circumference - (progressPercent / 100) * circumference;
+            
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = offset;
+            document.getElementById('progressPercent').innerText = `${progressPercent}%`;
+            document.getElementById('statsLearnedCount').innerText = learnedCount;
+            document.getElementById('statsRankText').innerText = `ระดับ: ${rankText}`;
+        }
+
+        function getDayName(day) {
+            const date = new Date(2026, 0, day); // Jan 2026
+            const days = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
+            return days[date.getDay()];
+        }
+
+        // Toggle Check-in for any date
+        function toggleCheckIn(dateStr) {
+            let logs = JSON.parse(localStorage.getItem(KEY_LOGS) || '[]');
+            if(logs.includes(dateStr)) {
+                // Uncheck
+                logs = logs.filter(d => d !== dateStr);
+            } else {
+                // Check
+                logs.push(dateStr);
+            }
+            localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
+            loadUserData(); // Refresh UI
+        }
+
+        // Original check-in button (for today)
+        function checkInToday() {
+            toggleCheckIn('2026-01-16');
+        }
+
+        function uploadProfileImage(input) {
+            if(input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImg').src = e.target.result;
+                    localStorage.setItem(KEY_PROFILE_IMG, e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        window.onload = () => {
+            renderSchedule(currentMatches);
+            renderTechniques();
+            renderLeaderboard();
+            lucide.createIcons();
+            
+            const savedImg = localStorage.getItem(KEY_PROFILE_IMG);
+            if(savedImg) document.getElementById('profileImg').src = savedImg;
+            
+            // Init load for stats
+            loadUserData();
+        };
+    </script>
 </body>
 </html>
