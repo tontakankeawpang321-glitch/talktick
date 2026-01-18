@@ -70,12 +70,50 @@
         .app-view.active { display: block; }
         .nav-item.active { color: #F59E0B; }
         .nav-item.active i { stroke-width: 2.5px; }
+        .calendar-day.active { background-color: rgba(245, 158, 11, 0.2); color: #F59E0B; border: 1px solid #F59E0B; font-weight: bold; }
+        .calendar-day.today { background-color: #F59E0B; color: black; font-weight: bold; }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        
+        /* Updated Horizontal Calendar Styles */
+        .calendar-capsule {
+            flex-shrink: 0;
+            width: 48px;
+            height: 64px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background-color: #1E293B; /* cardBg */
+            border: 1px solid #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .calendar-capsule:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+        .calendar-capsule.active {
+            background-color: rgba(245, 158, 11, 0.2); 
+            border-color: #F59E0B;
+            color: #F59E0B;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+        }
+        .calendar-capsule.today {
+            background-color: #F59E0B;
+            color: black;
+            border-color: #F59E0B;
+        }
+        .calendar-capsule.active.today {
+            background-color: #F59E0B;
+            color: black;
+            border: 2px solid white;
+        }
         
         /* Updated Small Calendar Grid Style */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 4px; /* Reduced gap */
+            gap: 4px;
             text-align: center;
         }
         .calendar-day {
@@ -84,13 +122,13 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%; 
-            font-size: 0.75rem; /* Smaller font */
+            font-size: 0.75rem; 
             color: #64748b;
             position: relative;
-            cursor: default; /* Default no cursor */
+            cursor: default; 
             transition: all 0.2s;
             background-color: transparent;
-            width: 32px; /* Fixed small width */
+            width: 32px; 
             height: 32px;
             margin: 0 auto;
         }
@@ -123,7 +161,6 @@
             pointer-events: none;
         }
 
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
         
         .tech-card-bg {
             background: radial-gradient(circle at center, #1E293B 0%, #0F172A 100%);
@@ -163,7 +200,7 @@
             <div class="mb-6">
                 <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-800 aspect-[2/1] md:aspect-[3/1] group">
                     <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-80 z-10"></div>
-                    <img src="https://placehold.co/1200x400/111/FFF?text=ONE+Friday+Fights+138" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-700">
+                    <img src="https://placehold.co/1200x400/111/FFF?text=ONE+Lumpinee+Live" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-700">
                     <div class="absolute bottom-0 left-0 p-6 z-20 w-full">
                         <div class="flex items-center gap-2 mb-3">
                             <span class="bg-muayRed text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse">ถ่ายทอดสดวันนี้</span>
@@ -195,7 +232,7 @@
                 
                 <!-- AI Update All Button -->
                 <button onclick="updateAllSystem()" class="bg-gradient-to-r from-muayGold to-amber-600 hover:from-amber-400 hover:to-amber-700 text-black font-bold text-xs px-4 py-2 rounded-lg shadow-lg shadow-amber-900/40 flex items-center gap-2 transition active:scale-95">
-                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
                     อัพเดทตารางจริง
                 </button>
             </div>
@@ -271,7 +308,7 @@
             <div id="leaderboardList" class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden divide-y divide-gray-700/50"></div>
         </div>
 
-        <!-- === VIEW 4: PROFILE (Redesigned) === -->
+        <!-- === VIEW 4: PROFILE === -->
         <div id="view-profile" class="app-view">
             <div class="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-2xl border border-gray-700 shadow-xl mb-6 text-center relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-muayRed via-muayGold to-muayBlue"></div>
@@ -314,11 +351,9 @@
                     <span class="text-sm font-bold text-gray-300" id="currentMonthYear">มกราคม 2569</span>
                     <div class="text-[10px] text-gray-400">แตะวันที่ 16 เพื่อลงชื่อ</div>
                 </div>
-                <!-- Week Header -->
                 <div class="grid grid-cols-7 gap-1 text-center text-[10px] text-gray-500 mb-2">
                     <div>อา</div><div>จ</div><div>อ</div><div>พ</div><div>พฤ</div><div>ศ</div><div>ส</div>
                 </div>
-                <!-- Interactive Calendar Grid -->
                 <div class="calendar-grid" id="calendarGrid"></div>
             </div>
             
@@ -350,7 +385,7 @@
         <p class="text-gray-400 text-sm">ดึงข้อมูลจาก watch.onefc.com...</p>
     </div>
 
-    <!-- Modal (Detail View & Video) -->
+    <!-- Modal -->
     <div id="infoModal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-black/90 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
         <div class="fixed inset-0 z-10 overflow-y-auto">
@@ -359,7 +394,6 @@
                     <button onclick="closeModal()" class="absolute right-4 top-4 text-white bg-black/50 rounded-full p-2 z-20 hover:bg-black/80">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
-                    <!-- Modal Content -->
                     <div class="relative h-64 bg-black">
                         <img id="modalImg" src="" class="w-full h-full object-cover opacity-80">
                         <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
@@ -373,13 +407,9 @@
                             <h4 class="text-muayGold font-bold text-sm mb-2 flex items-center gap-2"><i data-lucide="book-open" class="w-4 h-4"></i> คำอธิบาย</h4>
                             <p id="modalDesc" class="text-gray-300 text-sm leading-relaxed font-body">Description...</p>
                         </div>
-
-                        <!-- Video Button -->
                         <button onclick="playDemoVideo()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl mb-6 shadow-lg shadow-red-900/30 flex items-center justify-center gap-2 transition active:scale-95">
                             <i data-lucide="play-circle" class="w-5 h-5"></i> ดูวิดีโอสาธิต (Demo)
                         </button>
-                        
-                        <!-- AI Stats -->
                         <div class="space-y-4">
                             <div>
                                 <div class="flex justify-between text-xs mb-1.5 text-gray-400"><span>พลังทำลาย (Power)</span><span id="statPower" class="font-mono text-muayRed">0%</span></div>
@@ -390,7 +420,6 @@
                                 <div class="w-full bg-gray-700 rounded-full h-1.5"><div id="barDiff" class="bg-muayBlue h-1.5 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.5)]" style="width: 0%"></div></div>
                             </div>
                         </div>
-
                         <div class="mt-6 flex items-center justify-center gap-2 text-green-400 bg-green-900/20 p-2 rounded-lg border border-green-900/50 text-xs">
                             <i data-lucide="check-circle" class="w-4 h-4"></i>
                             <span>บันทึกการเรียนรู้เรียบร้อยแล้ว</span>
@@ -401,7 +430,7 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation (Visible on All Screens) -->
+    <!-- Bottom Navigation -->
     <div class="fixed bottom-0 w-full glass-nav z-50 shadow-up pb-safe">
         <div class="grid grid-cols-4 items-center h-16">
             <button onclick="switchTab('home')" class="nav-item active flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-muayGold transition" id="nav-home">
@@ -431,7 +460,7 @@
         const KEY_LEARNED_TECHS = 'muay_learned_techs';
         
         // **IMPORTANT:** Replace this URL with your actual Cloudflare Worker URL
-        const WORKER_URL = "https://your-worker.workers.dev"; 
+        const WORKER_URL = "https://mute-unit-1629.tontakankeawpang.workers.dev/"; 
 
         // --- REAL DATA: ONE Friday Fights 138 (Jan 16, 2026) ---
         let currentMatches = [
@@ -496,16 +525,7 @@
             { id: 'c5', name: "จับขาแล้วไถนา", category: "counter", desc: "จับขาคู่ต่อสู้แล้วดันไปข้างหน้าให้เสียหลัก", power: 70, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Catch+Leg" }
         ];
 
-        // --- WORKER CODE ---
-        const workerCode = `
-            self.onmessage = function(e) {
-                setTimeout(() => {
-                    self.postMessage({ status: 'success' });
-                }, 2000);
-            };
-        `;
-
-        function updateAllSystem() {
+        async function updateAllSystem() {
             const today = new Date().toISOString().split('T')[0];
             const lastUpdate = localStorage.getItem(KEY_LAST_UPDATE);
 
@@ -514,26 +534,45 @@
                 return;
             }
 
-            const overlay = document.getElementById('aiOverlay');
-            overlay.classList.remove('hidden');
+            document.getElementById('aiOverlay').classList.remove('hidden');
 
-            const blob = new Blob([workerCode], { type: "application/javascript" });
-            const worker = new Worker(URL.createObjectURL(blob));
+            try {
+                // IMPORTANT: Replace this with your REAL Cloudflare Worker URL
+                const res = await fetch(WORKER_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        action: "update_matches"
+                    })
+                });
 
-            worker.postMessage({}); // Start worker
+                if (!res.ok) throw new Error("Worker error or invalid response");
 
-            worker.onmessage = function(e) {
+                const data = await res.json();
+
+                if (data.matches) {
+                    currentMatches = data.matches;
+                }
+                
                 renderSchedule(currentMatches);
                 renderLeaderboard();
+                renderTechniques();
+
+                localStorage.setItem(KEY_LAST_UPDATE, today);
                 
                 const now = new Date();
                 document.getElementById('lastUpdate').innerText = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-                localStorage.setItem(KEY_LAST_UPDATE, today);
-                
-                overlay.classList.add('hidden');
-                worker.terminate();
-                alert("✅ อัพเดทข้อมูลจาก watch.onefc.com เรียบร้อยแล้ว");
-            };
+
+                alert("✅ ดึงข้อมูลจาก Worker สำเร็จ");
+
+            } catch (err) {
+                console.error(err);
+                alert("❌ เชื่อมต่อ Worker ไม่สำเร็จ (กรุณาตรวจสอบ URL หรือการตั้งค่า Worker)");
+            } finally {
+                document.getElementById('aiOverlay').classList.add('hidden');
+            }
         }
 
         // --- FUNCTIONS ---
@@ -560,14 +599,20 @@
         function renderSchedule(data) {
             const container = document.getElementById('scheduleContainer');
             container.innerHTML = '';
+            
+            if (data.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 py-10">ไม่พบรายการแข่งขัน</div>';
+                return;
+            }
+
             data.forEach(f => {
                 container.innerHTML += `
-                    <div class="bg-gray-800 rounded-2xl p-4 flex gap-4 items-center border border-gray-700/50 shadow-sm active:scale-[0.98] transition">
+                    <div class="bg-gray-800 rounded-2xl p-4 flex gap-4 items-center border border-gray-700/50 shadow-sm active:scale-[0.98] transition fade-in">
                         <img src="${f.img}" class="w-16 h-16 rounded-full object-cover border-2 border-gray-600">
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="font-bold text-white truncate text-base">${f.red} vs ${f.blue}</h3>
-                                <span class="bg-red-900/30 text-red-400 text-[10px] px-1.5 py-0.5 rounded border border-red-900/50">สด</span>
+                                <h3 class="font-bold text-white truncate text-base">${f.red} พบ ${f.blue}</h3>
+                                <span class="bg-blue-900/30 text-blue-400 text-[10px] px-1.5 py-0.5 rounded border border-blue-900/50">เร็วๆนี้</span>
                             </div>
                             <div class="text-xs text-gray-400 mb-2 flex flex-col gap-1">
                                 <span class="font-bold text-white">${f.event}</span>
@@ -586,12 +631,13 @@
                     </div>
                 `;
             });
+            lucide.createIcons();
         }
 
+        // ... (Render Leaderboard & Techniques - Same as before)
         function renderLeaderboard() {
             const podium = document.getElementById('podiumContainer');
             const list = document.getElementById('leaderboardList');
-            // Mock render logic for brevity
             podium.innerHTML = `<div class="text-center text-gray-500 text-sm w-full py-4">🏆 อันดับนักชกยอดเยี่ยมประจำสัปดาห์</div>`;
             list.innerHTML = fighterStats.map(f => `
                 <div class="px-4 py-3 flex items-center justify-between hover:bg-gray-700/30 transition">
@@ -604,29 +650,19 @@
             `).join('');
         }
 
-        // --- TECHNIQUES LOGIC ---
-        function getSearchQuery() {
-            const searchInput = document.getElementById('techSearch');
-            return searchInput ? searchInput.value : '';
-        }
+        function getSearchQuery() { return document.getElementById('techSearch') ? document.getElementById('techSearch').value : ''; }
         
         function renderTechniques(filter = 'all', searchQuery = '') {
             const container = document.getElementById('techniquesGrid');
             container.innerHTML = '';
-            
-            // Get Learned IDs
             const learnedIds = JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS) || '[]');
-
-            // Update Badge
             document.getElementById('techProgressBadge').innerText = `${learnedIds.length}/${techniquesData.length}`;
 
-            // Filter
             const filtered = techniquesData.filter(t => 
                 (filter === 'all' || t.category === filter) && 
                 (t.name.includes(searchQuery) || t.desc.includes(searchQuery))
             );
 
-            // Update Filter Buttons
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if(btn.getAttribute('onclick').includes(filter)) {
                     btn.classList.add('bg-muayGold', 'text-black', 'font-bold');
@@ -641,20 +677,14 @@
                 const isLearned = learnedIds.includes(t.id);
                 const checkMark = isLearned ? `<div class="absolute top-2 right-2 bg-green-500 text-black w-5 h-5 flex items-center justify-center rounded-full z-10 shadow-lg"><i data-lucide="check" class="w-3 h-3"></i></div>` : '';
                 const opacity = isLearned ? 'opacity-100 ring-1 ring-green-500/50' : 'opacity-90';
-                
-                // New Card Design: Text First, Minimal Image hint
                 container.innerHTML += `
                     <div onclick="openModal('${t.id}')" class="tech-card-bg rounded-2xl p-4 border border-gray-700 hover:border-muayGold transition cursor-pointer flex flex-col justify-between h-32 relative group overflow-hidden ${opacity}">
                         ${checkMark}
-                        
-                        <!-- Hover Background Reveal -->
                         <div class="absolute inset-0 opacity-0 group-hover:opacity-20 transition duration-500 bg-[url('${t.img}')] bg-cover bg-center z-0"></div>
-                        
                         <div class="relative z-10">
                             <span class="text-[10px] text-muayGold font-bold uppercase tracking-wider mb-1 block">${t.category.replace('_', ' ')}</span>
                             <h4 class="font-bold text-lg text-white leading-tight">${t.name}</h4>
                         </div>
-                        
                         <div class="relative z-10 flex justify-between items-end mt-2">
                             <div class="text-[10px] text-gray-400">Power: ${t.power}</div>
                             <i data-lucide="arrow-right-circle" class="w-5 h-5 text-gray-500 group-hover:text-muayGold transition"></i>
@@ -671,15 +701,12 @@
         function openModal(id) {
             const t = techniquesData.find(x => x.id === id);
             if(!t) return;
-
-            // SAVE LEARNING PROGRESS
             let learnedIds = JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS) || '[]');
             if(!learnedIds.includes(id)) {
                 learnedIds.push(id);
                 localStorage.setItem(KEY_LEARNED_TECHS, JSON.stringify(learnedIds));
-                renderTechniques(); // Refresh grid badges
+                renderTechniques(); 
             }
-
             document.getElementById('modalTitle').innerText = t.name;
             document.getElementById('modalDesc').innerText = t.desc;
             document.getElementById('modalImg').src = t.img;
@@ -687,10 +714,7 @@
             document.getElementById('barPower').style.width = t.power + '%';
             document.getElementById('statDiff').innerText = t.diff + '/100';
             document.getElementById('barDiff').style.width = t.diff + '%';
-            
-            let catText = t.category === 'mae_mai' ? "แม่ไม้มวยไทย" : (t.category === 'luk_mai' ? "ลูกไม้มวยไทย" : "กลมวยแก้");
-            document.getElementById('modalTags').innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-muayGold text-black shadow-lg">${catText}</span>`;
-            
+            document.getElementById('modalTags').innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-muayGold text-black shadow-lg">${t.category}</span>`;
             document.getElementById('infoModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
             lucide.createIcons();
@@ -699,9 +723,7 @@
         function closeModal() { document.getElementById('infoModal').classList.add('hidden'); document.body.style.overflow = ''; }
         function playDemoVideo() { alert('กำลังโหลดวิดีโอสาธิต...'); }
 
-        // --- PROFILE & STATS LOGIC ---
         function loadUserData() {
-            // Logs & Calendar
             const container = document.getElementById('calendarGrid');
             container.innerHTML = '';
             const logs = JSON.parse(localStorage.getItem(KEY_LOGS) || '[]');
@@ -711,52 +733,32 @@
                 el.className = 'calendar-day';
                 el.innerText = i;
                 if(i === 16) el.classList.add('today'); 
-                
-                // Construct date string YYYY-MM-DD
                 const dateStr = `2026-01-${String(i).padStart(2,'0')}`;
-                
-                // Check status
-                const isCheckedIn = logs.includes(dateStr);
-                if(isCheckedIn) el.classList.add('active');
-
-                // Logic: Only allow clicking today (16th)
+                if(logs.includes(dateStr)) el.classList.add('active');
                 if(i === 16) {
                     el.classList.add('clickable');
                     el.onclick = () => toggleCheckIn(dateStr);
                 } else {
                     el.classList.add('disabled');
                 }
-                
                 container.appendChild(el);
             }
-
-            // Calculate Level & Streak
-            let streak = 0; 
-            if(logs.length > 0) streak = logs.length; 
-
-            // Techniques Stats
+            let streak = logs.length > 0 ? logs.length : 0; 
             const learnedIds = JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS) || '[]');
             const learnedCount = learnedIds.length;
             const totalTechs = techniquesData.length;
             const progressPercent = Math.round((learnedCount / totalTechs) * 100);
-            
-            // Calculate Rank/Level Logic
             let rankText = "Nak Muay (นักมวยฝึกหัด)";
             if(learnedCount > 10 && logs.length > 5) rankText = "Kru (ครูมวย)";
             else if(learnedCount > 5) rankText = "Fighter (นักสู้)";
-
-            // Update Profile View
             document.getElementById('statCheckinsProfile').innerText = logs.length;
             document.getElementById('statStreakProfile').innerText = streak;
             document.getElementById('statLearnedProfile').innerText = learnedCount;
             document.getElementById('profileRankDisplay').innerText = rankText;
-
-            // Update Stats View (Circle Chart)
             const circle = document.getElementById('progressCircle');
             const radius = circle.r.baseVal.value;
             const circumference = radius * 2 * Math.PI;
             const offset = circumference - (progressPercent / 100) * circumference;
-            
             circle.style.strokeDasharray = `${circumference} ${circumference}`;
             circle.style.strokeDashoffset = offset;
             document.getElementById('progressPercent').innerText = `${progressPercent}%`;
@@ -764,24 +766,18 @@
             document.getElementById('statsRankText').innerText = `ระดับ: ${rankText}`;
         }
 
-        // Toggle Check-in for any date
         function toggleCheckIn(dateStr) {
             let logs = JSON.parse(localStorage.getItem(KEY_LOGS) || '[]');
             if(logs.includes(dateStr)) {
-                // Uncheck
                 logs = logs.filter(d => d !== dateStr);
             } else {
-                // Check
                 logs.push(dateStr);
             }
             localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
-            loadUserData(); // Refresh UI
+            loadUserData(); 
         }
 
-        // Original check-in button (for today)
-        function checkInToday() {
-            toggleCheckIn('2026-01-16');
-        }
+        function checkInToday() { toggleCheckIn('2026-01-16'); }
 
         function uploadProfileImage(input) {
             if(input.files && input.files[0]) {
@@ -799,11 +795,8 @@
             renderTechniques();
             renderLeaderboard();
             lucide.createIcons();
-            
             const savedImg = localStorage.getItem(KEY_PROFILE_IMG);
             if(savedImg) document.getElementById('profileImg').src = savedImg;
-            
-            // Init load for stats
             loadUserData();
         };
     </script>
