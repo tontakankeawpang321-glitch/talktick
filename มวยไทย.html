@@ -161,6 +161,7 @@
             pointer-events: none;
         }
 
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
         
         .tech-card-bg {
             background: radial-gradient(circle at center, #1E293B 0%, #0F172A 100%);
@@ -196,26 +197,26 @@
         
         <!-- === VIEW 1: HOME (Schedule) === -->
         <div id="view-home" class="app-view active">
-            <!-- Hero Banner: ONE Friday Fights 138 -->
+            <!-- Hero Banner -->
             <div class="mb-6">
                 <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-800 aspect-[2/1] md:aspect-[3/1] group">
                     <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-80 z-10"></div>
-                    <img src="https://placehold.co/1200x400/111/FFF?text=ONE+Lumpinee+Live" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-700">
+                    <img src="https://placehold.co/1200x400/111/FFF?text=ONE+Championship+Live" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-700">
                     <div class="absolute bottom-0 left-0 p-6 z-20 w-full">
                         <div class="flex items-center gap-2 mb-3">
-                            <span class="bg-muayRed text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse">ถ่ายทอดสดวันนี้</span>
-                            <span class="text-xs text-gray-300 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> สนามมวยเวทีลุมพินี</span>
+                            <span class="bg-muayRed text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse">ถ่ายทอดสด</span>
+                            <span class="text-xs text-gray-300 flex items-center gap-1"><i data-lucide="zap" class="w-3 h-3"></i> อัพเดทเรียลไทม์</span>
                         </div>
-                        <h1 class="text-2xl md:text-4xl font-bold mb-2 text-white drop-shadow-lg">ONE ลุมพินี 138</h1>
+                        <h1 class="text-2xl md:text-4xl font-bold mb-2 text-white drop-shadow-lg">โปรแกรมมวยไทย 3 เดือน</h1>
                         
-                        <!-- Cool Date Display -->
+                        <!-- Auto Date Display -->
                         <div class="inline-flex items-center gap-3 date-badge px-4 py-2 rounded-lg mb-2">
-                            <div class="bg-muayGold text-black font-bold px-2 py-0.5 rounded text-xs">JAN</div>
-                            <span id="currentDateDisplay" class="text-white font-mono text-sm tracking-wide">16 | 2026</span>
-                            <span class="text-gray-400 text-xs border-l border-gray-600 pl-3">วันศุกร์</span>
+                            <div class="bg-muayGold text-black font-bold px-2 py-0.5 rounded text-xs" id="headerMonth">...</div>
+                            <span id="headerDate" class="text-white font-mono text-sm tracking-wide">...</span>
+                            <span class="text-gray-400 text-xs border-l border-gray-600 pl-3" id="headerDay">...</span>
                         </div>
 
-                        <p class="text-gray-400 text-xs md:text-sm line-clamp-1 mt-2">ป้อมเพชร vs เดโช | ศึกกู้ศรัทธามวยไทย</p>
+                        <p class="text-gray-400 text-xs md:text-sm line-clamp-1 mt-2">ตารางการแข่งขันล่วงหน้า คำนวณโดย AI</p>
                     </div>
                 </div>
             </div>
@@ -232,7 +233,7 @@
                 
                 <!-- AI Update All Button -->
                 <button onclick="updateAllSystem()" class="bg-gradient-to-r from-muayGold to-amber-600 hover:from-amber-400 hover:to-amber-700 text-black font-bold text-xs px-4 py-2 rounded-lg shadow-lg shadow-amber-900/40 flex items-center gap-2 transition active:scale-95">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                     อัพเดทตารางจริง
                 </button>
             </div>
@@ -348,8 +349,8 @@
             <!-- Small Calendar (Grid) -->
             <div class="bg-gray-800 p-3 rounded-2xl border border-gray-700 mb-6 w-full max-w-sm mx-auto">
                 <div class="flex justify-between items-center mb-3 px-2">
-                    <span class="text-sm font-bold text-gray-300" id="currentMonthYear">มกราคม 2569</span>
-                    <div class="text-[10px] text-gray-400">แตะวันที่ 16 เพื่อลงชื่อ</div>
+                    <span class="text-sm font-bold text-gray-300" id="currentMonthYear">...</span>
+                    <div class="text-[10px] text-gray-400">แตะวันที่ <span id="todayIndicator"></span> เพื่อลงชื่อ</div>
                 </div>
                 <div class="grid grid-cols-7 gap-1 text-center text-[10px] text-gray-500 mb-2">
                     <div>อา</div><div>จ</div><div>อ</div><div>พ</div><div>พฤ</div><div>ศ</div><div>ส</div>
@@ -382,7 +383,7 @@
             <div class="absolute inset-0 flex items-center justify-center"><i data-lucide="server" class="w-8 h-8 text-white animate-pulse"></i></div>
         </div>
         <h3 class="text-2xl font-bold text-white mb-2">กำลังเชื่อมต่อ...</h3>
-        <p class="text-gray-400 text-sm">ดึงข้อมูลจาก watch.onefc.com...</p>
+        <p class="text-gray-400 text-sm">กำลังติดต่อเซิร์ฟเวอร์ Backend...</p>
     </div>
 
     <!-- Modal -->
@@ -456,23 +457,11 @@
         const KEY_USER = 'muay_user_name';
         const KEY_LOGS = 'muay_training_logs';
         const KEY_PROFILE_IMG = 'muay_profile_img';
-        const KEY_LAST_UPDATE = 'muay_last_update_date_v3';
+        const KEY_LAST_UPDATE = 'muay_last_update_date_v4';
         const KEY_LEARNED_TECHS = 'muay_learned_techs';
-        
-        // **IMPORTANT:** Replace this URL with your actual Cloudflare Worker URL
-        const WORKER_URL = "https://mute-unit-1629.tontakankeawpang.workers.dev/"; 
+        const KEY_MATCHES = 'muay_matches_data';
 
-        // --- REAL DATA: ONE Friday Fights 138 (Jan 16, 2026) ---
-        let currentMatches = [
-            { id: 13801, event: "ONE ลุมพินี 138 (คู่เอก)", red: "ป้อมเพชร พี.เค.แสนชัยฯ", blue: "เดโช ป.บริรักษ์", time: "21:30", date: "ศุกร์ 16 ม.ค. 2569", channel: "Ch7HD กด 35", ai_red: 55, ai_blue: 45, img: "https://placehold.co/600x300/111/FFF?text=Main+Event" },
-            { id: 13802, event: "ONE ลุมพินี 138 (คู่รอง)", red: "ชาติพยัคฆ์ ศักดิ์สตูล", blue: "อายัด อัลบัดร์", time: "21:00", date: "ศุกร์ 16 ม.ค. 2569", channel: "Ch7HD กด 35", ai_red: 60, ai_blue: 40, img: "https://placehold.co/600x300/222/FFF?text=Co-Main" },
-            { id: 13803, event: "ONE ลุมพินี 138", red: "บราซิล เอกเมืองนนท์", blue: "ยูเบด ฮุสเซน", time: "20:30", date: "ศุกร์ 16 ม.ค. 2569", channel: "Facebook / YouTube", ai_red: 45, ai_blue: 55, img: "https://placehold.co/600x300/333/FFF?text=Flyweight" },
-            { id: 13804, event: "ONE ลุมพินี 138", red: "ทองลำพูน เอฟ.เอ.กรุ๊ป", blue: "เกาะเต่า เพชรสมนึก", time: "20:00", date: "ศุกร์ 16 ม.ค. 2569", channel: "Facebook / YouTube", ai_red: 50, ai_blue: 50, img: "https://placehold.co/600x300/333/FFF?text=Strawweight" },
-            { id: 13805, event: "ONE ลุมพินี 138", red: "เพชรการ์ฟิลด์ จิตรเมืองนนท์", blue: "โลแกน ชาน", time: "19:30", date: "ศุกร์ 16 ม.ค. 2569", channel: "Facebook / YouTube", ai_red: 65, ai_blue: 35, img: "https://placehold.co/600x300/333/FFF?text=Bantamweight" },
-            { id: 13806, event: "ONE ลุมพินี 138", red: "เพชรนิลมังกร น้ำแข็งไอซ์แลนด์", blue: "โตโยต้า อีเกิลมวยไทย", time: "19:00", date: "ศุกร์ 16 ม.ค. 2569", channel: "Facebook / YouTube", ai_red: 50, ai_blue: 50, img: "https://placehold.co/600x300/333/FFF?text=Atomweight" },
-            { id: 13807, event: "ONE ลุมพินี 138", red: "ริฟดีน มาสดอร์", blue: "โมฮัมหมัด เรโด", time: "18:30", date: "ศุกร์ 16 ม.ค. 2569", channel: "Facebook / YouTube", ai_red: 58, ai_blue: 42, img: "https://placehold.co/600x300/333/FFF?text=Opener" }
-        ];
-
+        let currentMatches = [];
         let fighterStats = [
             { rank: 1, name: "รถถัง", wins: 260, ko: 105, img: "https://placehold.co/50x50/1e293b/FFF?text=1" },
             { rank: 2, name: "ซุปเปอร์เล็ก", wins: 190, ko: 78, img: "https://placehold.co/50x50/1e293b/FFF?text=2" },
@@ -483,7 +472,7 @@
 
         // 35 Muay Thai Techniques (Full Set)
         let techniquesData = [
-            // Mae Mai (15)
+             // Mae Mai (15)
             { id: 'm1', name: "สลับฟันปลา", category: "mae_mai", desc: "การหลบหลีกอาวุธคู่ต่อสู้และเข้าวงในเพื่อโจมตี", power: 75, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Salab+Fan+Pla" },
             { id: 'm2', name: "ปักษาแหวกรัง", category: "mae_mai", desc: "การปัดป้องและแหวกการ์ดเพื่อเข้าทำลายจังหวะ", power: 70, diff: 65, img: "https://placehold.co/400x300/1e293b/FFF?text=Paksa" },
             { id: 'm3', name: "ชวาซัดหอก", category: "mae_mai", desc: "การศอกคู่ใส่ลำตัวคู่ต่อสู้ เพื่อหยุดการบุก", power: 85, diff: 70, img: "https://placehold.co/400x300/1e293b/FFF?text=Chawa" },
@@ -525,53 +514,38 @@
             { id: 'c5', name: "จับขาแล้วไถนา", category: "counter", desc: "จับขาคู่ต่อสู้แล้วดันไปข้างหน้าให้เสียหลัก", power: 70, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Catch+Leg" }
         ];
 
-        async function updateAllSystem() {
-            const today = new Date().toISOString().split('T')[0];
-            const lastUpdate = localStorage.getItem(KEY_LAST_UPDATE);
-
-            if (lastUpdate === today) {
-                alert("⚠️ คุณได้อัพเดทข้อมูลประจำวันไปแล้ว\n(ระบบอนุญาตให้อัพเดท 1 ครั้งต่อวัน)");
-                return;
+        async function updateAllSystem(isAuto = false) {
+            if (!isAuto) {
+                document.getElementById('aiOverlay').classList.remove('hidden');
             }
 
-            document.getElementById('aiOverlay').classList.remove('hidden');
-
             try {
-                // IMPORTANT: Replace this with your REAL Cloudflare Worker URL
-                const res = await fetch(WORKER_URL, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        action: "update_matches"
-                    })
+                const res = await fetch("https://mute-unit-1629.tontakankeawpang.workers.dev/", {
+                    method: "POST"
                 });
-
-                if (!res.ok) throw new Error("Worker error or invalid response");
 
                 const data = await res.json();
 
-                if (data.matches) {
-                    currentMatches = data.matches;
-                }
-                
+                currentMatches = data.matches;
+                localStorage.setItem(KEY_MATCHES, JSON.stringify(currentMatches));
+
                 renderSchedule(currentMatches);
-                renderLeaderboard();
-                renderTechniques();
 
-                localStorage.setItem(KEY_LAST_UPDATE, today);
-                
                 const now = new Date();
-                document.getElementById('lastUpdate').innerText = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+                document.getElementById('lastUpdate').innerText =
+                    `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-                alert("✅ ดึงข้อมูลจาก Worker สำเร็จ");
+                if (!isAuto) {
+                    document.getElementById('aiOverlay').classList.add('hidden');
+                    alert("✅ อัพเดทจาก Backend Worker เรียบร้อย");
+                }
 
             } catch (err) {
+                alert("❌ เชื่อมต่อ backend ไม่สำเร็จ");
                 console.error(err);
-                alert("❌ เชื่อมต่อ Worker ไม่สำเร็จ (กรุณาตรวจสอบ URL หรือการตั้งค่า Worker)");
-            } finally {
-                document.getElementById('aiOverlay').classList.add('hidden');
+                if (!isAuto) {
+                     document.getElementById('aiOverlay').classList.add('hidden');
+                }
             }
         }
 
@@ -600,19 +574,19 @@
             const container = document.getElementById('scheduleContainer');
             container.innerHTML = '';
             
-            if (data.length === 0) {
-                container.innerHTML = '<div class="text-center text-gray-500 py-10">ไม่พบรายการแข่งขัน</div>';
-                return;
+            if(!data || data.length === 0) {
+                 container.innerHTML = '<div class="text-center text-gray-500 py-10">กำลังโหลดข้อมูล...</div>';
+                 return;
             }
 
             data.forEach(f => {
                 container.innerHTML += `
-                    <div class="bg-gray-800 rounded-2xl p-4 flex gap-4 items-center border border-gray-700/50 shadow-sm active:scale-[0.98] transition fade-in">
+                    <div class="bg-gray-800 rounded-2xl p-4 flex gap-4 items-center border border-gray-700/50 shadow-sm active:scale-[0.98] transition animate-fade-in">
                         <img src="${f.img}" class="w-16 h-16 rounded-full object-cover border-2 border-gray-600">
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-start mb-1">
                                 <h3 class="font-bold text-white truncate text-base">${f.red} พบ ${f.blue}</h3>
-                                <span class="bg-blue-900/30 text-blue-400 text-[10px] px-1.5 py-0.5 rounded border border-blue-900/50">เร็วๆนี้</span>
+                                <span class="bg-blue-900/30 text-blue-400 text-[10px] px-1.5 py-0.5 rounded border border-blue-900/50">Coming Soon</span>
                             </div>
                             <div class="text-xs text-gray-400 mb-2 flex flex-col gap-1">
                                 <span class="font-bold text-white">${f.event}</span>
@@ -723,26 +697,45 @@
         function closeModal() { document.getElementById('infoModal').classList.add('hidden'); document.body.style.overflow = ''; }
         function playDemoVideo() { alert('กำลังโหลดวิดีโอสาธิต...'); }
 
+        // --- PROFILE & STATS LOGIC ---
         function loadUserData() {
             const container = document.getElementById('calendarGrid');
             container.innerHTML = '';
             const logs = JSON.parse(localStorage.getItem(KEY_LOGS) || '[]');
-            const daysInMonth = new Date(2026, 1, 0).getDate(); 
+            const now = new Date();
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate(); 
+            
+            // Header
+            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            document.getElementById('currentMonthYear').innerText = `${thaiMonths[now.getMonth()]} ${now.getFullYear() + 543}`;
+            document.getElementById('todayIndicator').innerText = now.getDate();
+
             for(let i=1; i<=daysInMonth; i++) {
                 const el = document.createElement('div');
                 el.className = 'calendar-day';
                 el.innerText = i;
-                if(i === 16) el.classList.add('today'); 
-                const dateStr = `2026-01-${String(i).padStart(2,'0')}`;
+                
+                // Construct date string YYYY-MM-DD
+                // Need careful zero padding and month indexing
+                const m = String(now.getMonth() + 1).padStart(2, '0');
+                const d = String(i).padStart(2, '0');
+                const dateStr = `${now.getFullYear()}-${m}-${d}`;
+                
+                if(i === now.getDate()) el.classList.add('today'); 
+                
                 if(logs.includes(dateStr)) el.classList.add('active');
-                if(i === 16) {
+                
+                // Logic: Only allow clicking today
+                if(i === now.getDate()) {
                     el.classList.add('clickable');
                     el.onclick = () => toggleCheckIn(dateStr);
                 } else {
                     el.classList.add('disabled');
                 }
+                
                 container.appendChild(el);
             }
+
             let streak = logs.length > 0 ? logs.length : 0; 
             const learnedIds = JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS) || '[]');
             const learnedCount = learnedIds.length;
@@ -777,7 +770,12 @@
             loadUserData(); 
         }
 
-        function checkInToday() { toggleCheckIn('2026-01-16'); }
+        function checkInToday() { 
+            const now = new Date();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            toggleCheckIn(`${now.getFullYear()}-${m}-${d}`); 
+        }
 
         function uploadProfileImage(input) {
             if(input.files && input.files[0]) {
@@ -790,7 +788,29 @@
             }
         }
 
+        function initData() {
+            // Set Today's Date
+            const now = new Date();
+            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            const thaiDays = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+            
+            // Header
+            document.getElementById('currentDateDisplay').innerHTML = `
+                <i data-lucide="calendar" class="w-4 h-4"></i> 
+                <span>วัน${thaiDays[now.getDay()]}ที่ ${now.getDate()} ${thaiMonths[now.getMonth()]} ${now.getFullYear() + 543}</span>
+            `;
+            
+            // Check LocalStorage for saved matches
+            const savedMatches = localStorage.getItem(KEY_MATCHES);
+            if (savedMatches) {
+                currentMatches = JSON.parse(savedMatches);
+            } else {
+                updateAllSystem(true); // Auto run first time
+            }
+        }
+
         window.onload = () => {
+            initData();
             renderSchedule(currentMatches);
             renderTechniques();
             renderLeaderboard();
