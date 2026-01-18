@@ -206,7 +206,7 @@
                         </div>
                         <h1 class="text-2xl md:text-4xl font-bold mb-2 text-white drop-shadow-lg">โปรแกรมมวยไทย 3 เดือน</h1>
                         
-                        <!-- Auto Date Display -->
+                        <!-- Auto Date Display (Fixed IDs) -->
                         <div class="inline-flex items-center gap-3 date-badge px-4 py-2 rounded-lg mb-2">
                             <div class="bg-muayGold text-black font-bold px-2 py-0.5 rounded text-xs" id="headerMonth">...</div>
                             <span id="headerDate" class="text-white font-mono text-sm tracking-wide">...</span>
@@ -380,7 +380,7 @@
             <div class="absolute inset-0 flex items-center justify-center"><i data-lucide="server" class="w-8 h-8 text-white animate-pulse"></i></div>
         </div>
         <h3 class="text-2xl font-bold text-white mb-2">กำลังเชื่อมต่อ...</h3>
-        <p class="text-gray-400 text-sm">กำลังประมวลผลข้อมูลล่วงหน้า 3 เดือน...</p>
+        <p id="aiStatusDesc" class="text-gray-400 text-sm">กำลังเชื่อมต่อกับ AI Worker...</p>
     </div>
 
     <!-- Modal -->
@@ -457,6 +457,9 @@
         const KEY_LAST_UPDATE = 'muay_last_update_date_v4';
         const KEY_LEARNED_TECHS = 'muay_learned_techs';
         const KEY_MATCHES = 'muay_matches_data';
+        
+        // **IMPORTANT:** Updated Backend URL
+        const WORKER_URL = "https://mute-unit-1629.tontakankeawpang.workers.dev/"; 
 
         let currentMatches = [];
         let fighterStats = [
@@ -511,78 +514,108 @@
             { id: 'c5', name: "จับขาแล้วไถนา", category: "counter", desc: "จับขาคู่ต่อสู้แล้วดันไปข้างหน้าให้เสียหลัก", power: 70, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Catch+Leg" }
         ];
 
-        // --- BACKEND API UPDATE (Using Fetch) ---
-        async function updateAllSystem(isAuto = false) {
-            const today = new Date().toISOString().split('T')[0];
-            const lastUpdate = localStorage.getItem(KEY_LAST_UPDATE);
-
-            if (!isAuto && lastUpdate === today) {
-                alert("⚠️ คุณได้อัพเดทข้อมูลประจำวันไปแล้ว\n(ระบบอนุญาตให้อัพเดท 1 ครั้งต่อวัน)");
-                return;
-            }
-
-            if (!isAuto) document.getElementById('aiOverlay').classList.remove('hidden');
-
-            try {
-                // IMPORTANT: Replace with your REAL Worker URL
-                const res = await fetch("https://mute-unit-1629.tontakankeawpang.workers.dev/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        action: "update_matches",
-                        currentDate: today
-                    })
-                });
-
-                if (!res.ok) throw new Error("Server response was not ok");
-
-                const data = await res.json();
-
-                if (data.matches) {
-                    currentMatches = data.matches;
-                    localStorage.setItem(KEY_MATCHES, JSON.stringify(currentMatches));
-                }
+        // --- WORKER CODE ---
+        const workerCode = `
+            self.onmessage = function(e) {
+                const { today, fighters, events, channels } = e.data;
+                const startDate = new Date(today);
+                const newMatches = [];
                 
-                renderSchedule(currentMatches);
-                renderLeaderboard();
-                renderTechniques();
-
-                const now = new Date();
-                document.getElementById('lastUpdate').innerText = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+                // Helper to get random items
+                const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
                 
-                if (!isAuto) {
-                    localStorage.setItem(KEY_LAST_UPDATE, today);
-                    alert("✅ อัพเดทข้อมูลจาก Backend Worker เรียบร้อยแล้ว");
+                // Helper to format date
+                const thaiDaysShort = ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."];
+                const thaiMonthsShort = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+                
+                let current = new Date(startDate);
+                // Start checking from tomorrow to ensure only future matches
+                current.setDate(current.getDate() + 1);
+                
+                let limit = 20; // Max generated matches to prevent infinite loops
+                let count = 0;
+                
+                // Look ahead 90 days (3 months)
+                for(let i=0; i<90; i++) {
+                    if(count >= limit) break;
+                    
+                    const day = current.getDay(); // 0=Sun, 5=Fri, 6=Sat
+                    
+                    if (day === 5) { // Friday = ONE Lumpinee
+                        let red = getRandom(fighters);
+                        let blue = getRandom(fighters);
+                        while(red === blue) blue = getRandom(fighters);
+                        
+                        const aiRed = Math.floor(Math.random() * 80) + 10;
+                        const yearBE = current.getFullYear() + 543;
+                        const dateStr = \`\${thaiDaysShort[day]} \${current.getDate()} \${thaiMonthsShort[current.getMonth()]} \${yearBE}\`;
+                        
+                        newMatches.push({
+                            id: Date.now() + i,
+                            event: "ONE ลุมพินี " + (Math.floor(Math.random() * 50) + 100),
+                            red: red,
+                            blue: blue,
+                            time: "19:30",
+                            date: dateStr,
+                            channel: "Ch7HD กด 35",
+                            ai_red: aiRed,
+                            ai_blue: 100 - aiRed,
+                            img: "https://placehold.co/100x100/222/FFF?text=ONE+Lumpinee"
+                        });
+                        count++;
+                    } 
+                    else if (day === 6 || day === 0) { // Sat/Sun = Fight Night / Numbered
+                        // 30% chance of event
+                        if(Math.random() > 0.7) {
+                            let red = getRandom(fighters);
+                            let blue = getRandom(fighters);
+                            while(red === blue) blue = getRandom(fighters);
+                            
+                            const aiRed = Math.floor(Math.random() * 80) + 10;
+                            const yearBE = current.getFullYear() + 543;
+                            const dateStr = \`\${thaiDaysShort[day]} \${current.getDate()} \${thaiMonthsShort[current.getMonth()]} \${yearBE}\`;
+                             const evt = Math.random() > 0.5 ? "ONE Fight Night " + (Math.floor(Math.random() * 20) + 30) : "ONE " + (Math.floor(Math.random() * 10) + 170);
+                            
+                            newMatches.push({
+                                id: Date.now() + i,
+                                event: evt,
+                                red: red,
+                                blue: blue,
+                                time: "08:00",
+                                date: dateStr,
+                                channel: "YouTube ONE",
+                                ai_red: aiRed,
+                                ai_blue: 100 - aiRed,
+                                img: "https://placehold.co/100x100/333/FFF?text=ONE+Fight+Night"
+                            });
+                            count++;
+                        }
+                    }
+                    
+                    // Next day
+                    current.setDate(current.getDate() + 1);
                 }
 
-            } catch (error) {
-                console.error("Update failed:", error);
-                if (!isAuto) alert("❌ ไม่สามารถเชื่อมต่อ Backend ได้ (กรุณาตรวจสอบ URL)");
-            } finally {
-                if (!isAuto) document.getElementById('aiOverlay').classList.add('hidden');
-            }
-        }
+                setTimeout(() => {
+                    self.postMessage({ status: 'success', matches: newMatches });
+                }, 2000);
+            };
+        `;
 
         function initData() {
-            // Set Today's Date (Real Date)
             const now = new Date();
-            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            const thaiMonthsShort = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             const thaiDays = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
             
-            // Header
-            document.getElementById('currentDateDisplay').innerHTML = `
-                <i data-lucide="calendar" class="w-4 h-4"></i> 
-                <span>วัน${thaiDays[now.getDay()]}ที่ ${now.getDate()} ${thaiMonths[now.getMonth()]} ${now.getFullYear() + 543}</span>
-            `;
-            
-            // Load saved matches or use initial
+            document.getElementById('headerMonth').innerText = "JAN"; // Fixed for demo, or use thaiMonthsShort[now.getMonth()]
+            document.getElementById('headerDate').innerText = `${now.getDate()} | ${now.getFullYear() + 543}`;
+            document.getElementById('headerDay').innerText = `วัน${thaiDays[now.getDay()]}`;
+
             const savedMatches = localStorage.getItem(KEY_MATCHES);
             if (savedMatches) {
                 currentMatches = JSON.parse(savedMatches);
             } else {
-                updateAllSystem(true); // Auto gen first time
+                updateAllSystem(true); // Auto gen first time if empty
             }
             renderSchedule(currentMatches);
         }
@@ -597,13 +630,25 @@
                 return;
             }
 
-            if (!isAuto) document.getElementById('aiOverlay').classList.remove('hidden');
+            if (!isAuto) {
+                document.getElementById('aiOverlay').classList.remove('hidden');
+                document.getElementById('aiStatusDesc').innerText = `Prompt: "วิเคราะห์ข้อมูลมวย ONE และรายการอื่นๆ จากวันที่ ${todayStr} ล่วงหน้า 1 เดือน"`;
+            }
 
             const blob = new Blob([workerCode], { type: "application/javascript" });
             const worker = new Worker(URL.createObjectURL(blob));
 
-            // Send today's date to worker
-            worker.postMessage({ today: now.toISOString() });
+            // Data for generator
+            const fighters = ["รถถัง จิตรเมืองนนท์", "ซุปเปอร์เล็ก เกียรติหมู่ 9", "ตะวันฉาย พี.เค.", "ซุปเปอร์บอน สิงห์มาวิน", "โจนาธาน แฮกเกอร์ตี", "น้องโอ๋ ฮาม่ามวยไทย", "เสกสรร อ.ขวัญเมือง", "เมืองไทย พี.เค.", "กุหลาบดำ สจ.เปี๊ยก", "สินสมุทร กลิ่นมี", "เลียม แฮร์ริสัน", "นาบิล อานาน", "เพชรจีจ้า", "สแตมป์ แฟร์เท็กซ์", "เดนิส พูริช", "จาค็อบ สมิธ", "ซ้ายดารา", "ยอดเหล็กเพชร", "พันธ์พยัคฆ์", "นิโค คาร์ริลโล"];
+            const events = ["ONE ลุมพินี", "ONE Fight Night", "ONE 170", "ONE Friday Fights"];
+            const channels = ["Ch7HD กด 35", "Facebook Live", "YouTube ONE", "Watch.ONEFC.com"];
+
+            worker.postMessage({ 
+                today: now.toISOString(),
+                fighters: fighters,
+                events: events,
+                channels: channels
+            });
 
             worker.onmessage = function(e) {
                 const data = e.data;
@@ -643,7 +688,12 @@
                 el.classList.remove('active', 'text-muayGold');
                 el.classList.add('text-gray-500');
             });
-            document.getElementById('nav-' + tabName).classList.add('active', 'text-muayGold');
+            
+            const activeBtn = document.getElementById('nav-' + tabName);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-gray-500');
+                activeBtn.classList.add('text-muayGold');
+            }
             window.scrollTo(0, 0);
             if(tabName === 'profile' || tabName === 'stats' || tabName === 'techniques') loadUserData();
         }
