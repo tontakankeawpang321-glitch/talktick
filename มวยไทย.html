@@ -70,9 +70,6 @@
         .app-view.active { display: block; }
         .nav-item.active { color: #F59E0B; }
         .nav-item.active i { stroke-width: 2.5px; }
-        .calendar-day.active { background-color: rgba(245, 158, 11, 0.2); color: #F59E0B; border: 1px solid #F59E0B; font-weight: bold; }
-        .calendar-day.today { background-color: #F59E0B; color: black; font-weight: bold; }
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
         
         /* Updated Horizontal Calendar Styles */
         .calendar-capsule {
@@ -383,7 +380,7 @@
             <div class="absolute inset-0 flex items-center justify-center"><i data-lucide="server" class="w-8 h-8 text-white animate-pulse"></i></div>
         </div>
         <h3 class="text-2xl font-bold text-white mb-2">กำลังเชื่อมต่อ...</h3>
-        <p class="text-gray-400 text-sm">กำลังติดต่อเซิร์ฟเวอร์ Backend...</p>
+        <p class="text-gray-400 text-sm">กำลังประมวลผลข้อมูลล่วงหน้า 3 เดือน...</p>
     </div>
 
     <!-- Modal -->
@@ -472,7 +469,7 @@
 
         // 35 Muay Thai Techniques (Full Set)
         let techniquesData = [
-             // Mae Mai (15)
+            // Mae Mai (15)
             { id: 'm1', name: "สลับฟันปลา", category: "mae_mai", desc: "การหลบหลีกอาวุธคู่ต่อสู้และเข้าวงในเพื่อโจมตี", power: 75, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Salab+Fan+Pla" },
             { id: 'm2', name: "ปักษาแหวกรัง", category: "mae_mai", desc: "การปัดป้องและแหวกการ์ดเพื่อเข้าทำลายจังหวะ", power: 70, diff: 65, img: "https://placehold.co/400x300/1e293b/FFF?text=Paksa" },
             { id: 'm3', name: "ชวาซัดหอก", category: "mae_mai", desc: "การศอกคู่ใส่ลำตัวคู่ต่อสู้ เพื่อหยุดการบุก", power: 85, diff: 70, img: "https://placehold.co/400x300/1e293b/FFF?text=Chawa" },
@@ -514,39 +511,120 @@
             { id: 'c5', name: "จับขาแล้วไถนา", category: "counter", desc: "จับขาคู่ต่อสู้แล้วดันไปข้างหน้าให้เสียหลัก", power: 70, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Catch+Leg" }
         ];
 
+        // --- BACKEND API UPDATE (Using Fetch) ---
         async function updateAllSystem(isAuto = false) {
-            if (!isAuto) {
-                document.getElementById('aiOverlay').classList.remove('hidden');
+            const today = new Date().toISOString().split('T')[0];
+            const lastUpdate = localStorage.getItem(KEY_LAST_UPDATE);
+
+            if (!isAuto && lastUpdate === today) {
+                alert("⚠️ คุณได้อัพเดทข้อมูลประจำวันไปแล้ว\n(ระบบอนุญาตให้อัพเดท 1 ครั้งต่อวัน)");
+                return;
             }
 
+            if (!isAuto) document.getElementById('aiOverlay').classList.remove('hidden');
+
             try {
+                // IMPORTANT: Replace with your REAL Worker URL
                 const res = await fetch("https://mute-unit-1629.tontakankeawpang.workers.dev/", {
-                    method: "POST"
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        action: "update_matches",
+                        currentDate: today
+                    })
                 });
+
+                if (!res.ok) throw new Error("Server response was not ok");
 
                 const data = await res.json();
 
-                currentMatches = data.matches;
-                localStorage.setItem(KEY_MATCHES, JSON.stringify(currentMatches));
-
+                if (data.matches) {
+                    currentMatches = data.matches;
+                    localStorage.setItem(KEY_MATCHES, JSON.stringify(currentMatches));
+                }
+                
                 renderSchedule(currentMatches);
+                renderLeaderboard();
+                renderTechniques();
 
                 const now = new Date();
-                document.getElementById('lastUpdate').innerText =
-                    `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-
+                document.getElementById('lastUpdate').innerText = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+                
                 if (!isAuto) {
-                    document.getElementById('aiOverlay').classList.add('hidden');
-                    alert("✅ อัพเดทจาก Backend Worker เรียบร้อย");
+                    localStorage.setItem(KEY_LAST_UPDATE, today);
+                    alert("✅ อัพเดทข้อมูลจาก Backend Worker เรียบร้อยแล้ว");
                 }
 
-            } catch (err) {
-                alert("❌ เชื่อมต่อ backend ไม่สำเร็จ");
-                console.error(err);
-                if (!isAuto) {
-                     document.getElementById('aiOverlay').classList.add('hidden');
-                }
+            } catch (error) {
+                console.error("Update failed:", error);
+                if (!isAuto) alert("❌ ไม่สามารถเชื่อมต่อ Backend ได้ (กรุณาตรวจสอบ URL)");
+            } finally {
+                if (!isAuto) document.getElementById('aiOverlay').classList.add('hidden');
             }
+        }
+
+        function initData() {
+            // Set Today's Date (Real Date)
+            const now = new Date();
+            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            const thaiDays = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+            
+            // Header
+            document.getElementById('currentDateDisplay').innerHTML = `
+                <i data-lucide="calendar" class="w-4 h-4"></i> 
+                <span>วัน${thaiDays[now.getDay()]}ที่ ${now.getDate()} ${thaiMonths[now.getMonth()]} ${now.getFullYear() + 543}</span>
+            `;
+            
+            // Load saved matches or use initial
+            const savedMatches = localStorage.getItem(KEY_MATCHES);
+            if (savedMatches) {
+                currentMatches = JSON.parse(savedMatches);
+            } else {
+                updateAllSystem(true); // Auto gen first time
+            }
+            renderSchedule(currentMatches);
+        }
+
+        function updateAllSystem(isAuto = false) {
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            const lastUpdate = localStorage.getItem(KEY_LAST_UPDATE);
+
+            if (!isAuto && lastUpdate === todayStr) {
+                alert("⚠️ คุณได้อัพเดทข้อมูลประจำวันไปแล้ว\n(ระบบอนุญาตให้อัพเดท 1 ครั้งต่อวัน)");
+                return;
+            }
+
+            if (!isAuto) document.getElementById('aiOverlay').classList.remove('hidden');
+
+            const blob = new Blob([workerCode], { type: "application/javascript" });
+            const worker = new Worker(URL.createObjectURL(blob));
+
+            // Send today's date to worker
+            worker.postMessage({ today: now.toISOString() });
+
+            worker.onmessage = function(e) {
+                const data = e.data;
+                if (data.matches) {
+                    currentMatches = data.matches;
+                    localStorage.setItem(KEY_MATCHES, JSON.stringify(currentMatches));
+                }
+                
+                renderSchedule(currentMatches);
+                
+                const timeString = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+                document.getElementById('lastUpdate').innerText = timeString;
+                
+                if (!isAuto) {
+                    localStorage.setItem(KEY_LAST_UPDATE, todayStr);
+                    document.getElementById('aiOverlay').classList.add('hidden');
+                    alert("✅ อัพเดทตารางการแข่งขันล่วงหน้า 3 เดือนเรียบร้อยแล้ว");
+                }
+                
+                worker.terminate();
+            };
         }
 
         // --- FUNCTIONS ---
@@ -716,7 +794,6 @@
                 el.innerText = i;
                 
                 // Construct date string YYYY-MM-DD
-                // Need careful zero padding and month indexing
                 const m = String(now.getMonth() + 1).padStart(2, '0');
                 const d = String(i).padStart(2, '0');
                 const dateStr = `${now.getFullYear()}-${m}-${d}`;
@@ -788,30 +865,8 @@
             }
         }
 
-        function initData() {
-            // Set Today's Date
-            const now = new Date();
-            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-            const thaiDays = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
-            
-            // Header
-            document.getElementById('currentDateDisplay').innerHTML = `
-                <i data-lucide="calendar" class="w-4 h-4"></i> 
-                <span>วัน${thaiDays[now.getDay()]}ที่ ${now.getDate()} ${thaiMonths[now.getMonth()]} ${now.getFullYear() + 543}</span>
-            `;
-            
-            // Check LocalStorage for saved matches
-            const savedMatches = localStorage.getItem(KEY_MATCHES);
-            if (savedMatches) {
-                currentMatches = JSON.parse(savedMatches);
-            } else {
-                updateAllSystem(true); // Auto run first time
-            }
-        }
-
         window.onload = () => {
             initData();
-            renderSchedule(currentMatches);
             renderTechniques();
             renderLeaderboard();
             lucide.createIcons();
