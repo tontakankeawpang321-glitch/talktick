@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ONE Friday Fights 138 - Live Center</title>
+    <title>ONE Friday Fights 139 - Live Center</title>
     
     <!-- Google Fonts: Kanit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -71,41 +71,6 @@
         .nav-item.active { color: #F59E0B; }
         .nav-item.active i { stroke-width: 2.5px; }
         
-        /* Updated Horizontal Calendar Styles */
-        .calendar-capsule {
-            flex-shrink: 0;
-            width: 48px;
-            height: 64px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            background-color: #1E293B; /* cardBg */
-            border: 1px solid #334155;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .calendar-capsule:hover {
-            background-color: rgba(255,255,255,0.05);
-        }
-        .calendar-capsule.active {
-            background-color: rgba(245, 158, 11, 0.2); 
-            border-color: #F59E0B;
-            color: #F59E0B;
-            box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
-        }
-        .calendar-capsule.today {
-            background-color: #F59E0B;
-            color: black;
-            border-color: #F59E0B;
-        }
-        .calendar-capsule.active.today {
-            background-color: #F59E0B;
-            color: black;
-            border: 2px solid white;
-        }
-        
         /* Updated Small Calendar Grid Style */
         .calendar-grid {
             display: grid;
@@ -168,6 +133,18 @@
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
+        /* Console Cursor */
+        .cursor-blink {
+            display: inline-block;
+            width: 6px;
+            height: 14px;
+            background-color: #4ade80;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     </style>
 </head>
 <body class="antialiased selection:bg-muayGold selection:text-black">
@@ -198,22 +175,22 @@
             <div class="mb-6">
                 <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-800 aspect-[2/1] md:aspect-[3/1] group">
                     <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-80 z-10"></div>
-                    <img src="https://placehold.co/1200x400/111/FFF?text=ONE+Championship+Live" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-700">
+                    <img src="https://placehold.co/1200x400/111/FFF?text=ONE+Friday+Fights+139" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-700">
                     <div class="absolute bottom-0 left-0 p-6 z-20 w-full">
                         <div class="flex items-center gap-2 mb-3">
                             <span class="bg-muayRed text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse">ถ่ายทอดสด</span>
                             <span class="text-xs text-gray-300 flex items-center gap-1"><i data-lucide="zap" class="w-3 h-3"></i> อัพเดทเรียลไทม์</span>
                         </div>
-                        <h1 class="text-2xl md:text-4xl font-bold mb-2 text-white drop-shadow-lg">โปรแกรมมวยไทย 3 เดือน</h1>
+                        <h1 class="text-2xl md:text-4xl font-bold mb-2 text-white drop-shadow-lg">ONE ลุมพินี 139</h1>
                         
-                        <!-- Auto Date Display (Fixed IDs) -->
+                        <!-- Auto Date Display -->
                         <div class="inline-flex items-center gap-3 date-badge px-4 py-2 rounded-lg mb-2">
                             <div class="bg-muayGold text-black font-bold px-2 py-0.5 rounded text-xs" id="headerMonth">...</div>
                             <span id="headerDate" class="text-white font-mono text-sm tracking-wide">...</span>
                             <span class="text-gray-400 text-xs border-l border-gray-600 pl-3" id="headerDay">...</span>
                         </div>
 
-                        <p class="text-gray-400 text-xs md:text-sm line-clamp-1 mt-2">ตารางการแข่งขันล่วงหน้า คำนวณโดย AI</p>
+                        <p class="text-gray-400 text-xs md:text-sm line-clamp-1 mt-2">วรพล vs ซอ ลิน อู | ศึกใหญ่ประจำสัปดาห์</p>
                     </div>
                 </div>
             </div>
@@ -230,7 +207,7 @@
                 
                 <!-- AI Update All Button -->
                 <button onclick="updateAllSystem()" class="bg-gradient-to-r from-muayGold to-amber-600 hover:from-amber-400 hover:to-amber-700 text-black font-bold text-xs px-4 py-2 rounded-lg shadow-lg shadow-amber-900/40 flex items-center gap-2 transition active:scale-95">
-                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
                     อัพเดทตารางจริง
                 </button>
             </div>
@@ -373,14 +350,27 @@
         </div>
     </div>
 
-    <!-- AI Loading Overlay -->
-    <div id="aiOverlay" class="fixed inset-0 z-[70] hidden flex flex-col items-center justify-center bg-black/80 text-center px-6 transition-opacity duration-300">
+    <!-- AI Loading Overlay with PROMPT Animation -->
+    <div id="aiOverlay" class="fixed inset-0 z-[70] hidden flex flex-col items-center justify-center bg-black/90 text-center px-6 transition-opacity duration-300 backdrop-blur-sm">
         <div class="relative mb-6">
             <div class="w-24 h-24 rounded-full border-4 border-muayGold border-t-transparent animate-spin"></div>
-            <div class="absolute inset-0 flex items-center justify-center"><i data-lucide="server" class="w-8 h-8 text-white animate-pulse"></i></div>
+            <div class="absolute inset-0 flex items-center justify-center"><i data-lucide="cpu" class="w-8 h-8 text-white animate-pulse"></i></div>
         </div>
-        <h3 class="text-2xl font-bold text-white mb-2">กำลังเชื่อมต่อ...</h3>
-        <p id="aiStatusDesc" class="text-gray-400 text-sm">กำลังเชื่อมต่อกับ AI Worker...</p>
+        <h3 id="aiStatusTitle" class="text-2xl font-bold text-white mb-6">AI กําลังทำงาน...</h3>
+        
+        <!-- Prompt Box (Terminal Style) -->
+        <div class="w-full max-w-sm bg-gray-900 border border-gray-700 rounded-lg p-4 text-left shadow-2xl font-mono text-xs overflow-hidden">
+            <div class="flex items-center gap-1.5 mb-3 border-b border-gray-800 pb-2">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-gray-500 ml-auto opacity-75">AI_AGENT_V1.5.EXE</span>
+            </div>
+            <div id="aiPromptContent" class="space-y-1.5 text-green-400 min-h-[100px]">
+                <!-- Lines injected by JS -->
+            </div>
+            <div class="mt-2"><span class="text-muayGold">root@onefc-ai:~$</span><span class="cursor-blink"></span></div>
+        </div>
     </div>
 
     <!-- Modal -->
@@ -428,6 +418,70 @@
         </div>
     </div>
 
+    <!-- Match Detail Modal -->
+    <div id="matchModal" class="fixed inset-0 z-[65] hidden" aria-labelledby="match-modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-black/95 backdrop-blur-sm transition-opacity" onclick="closeMatchModal()"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center">
+                <div class="relative transform overflow-hidden bg-gray-900 text-left shadow-2xl transition-all sm:w-full sm:max-w-lg rounded-2xl border border-gray-700 w-full">
+                    <button onclick="closeMatchModal()" class="absolute right-4 top-4 text-white bg-black/50 rounded-full p-2 z-20 hover:bg-black/80">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                    <div class="relative h-48 bg-black">
+                        <img id="matchModalImg" src="" class="w-full h-full object-cover opacity-60">
+                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-0 right-0 text-center">
+                            <span id="matchModalEvent" class="bg-muayRed text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">EVENT NAME</span>
+                        </div>
+                    </div>
+                    <div class="p-6 pt-4">
+                        <div class="flex justify-between items-end mb-6">
+                            <div class="text-center w-1/2">
+                                <h3 id="matchRedName" class="text-lg font-bold text-muayRed break-words">RED</h3>
+                                <p class="text-xs text-gray-500">มุมแดง</p>
+                            </div>
+                            <div class="text-center w-10 text-xl font-bold text-gray-600 mb-2">VS</div>
+                            <div class="text-center w-1/2">
+                                <h3 id="matchBlueName" class="text-lg font-bold text-muayBlue break-words">BLUE</h3>
+                                <p class="text-xs text-gray-500">มุมน้ำเงิน</p>
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <div class="flex justify-between text-xs font-bold mb-1">
+                                <span class="text-muayRed">Win Chance</span>
+                                <span class="text-muayBlue">Win Chance</span>
+                            </div>
+                            <div class="relative h-6 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
+                                <div id="matchBarRed" class="absolute left-0 top-0 h-full bg-muayRed flex items-center justify-start pl-3 text-xs text-white font-bold transition-all duration-1000" style="width: 50%">50%</div>
+                                <div id="matchBarBlue" class="absolute right-0 top-0 h-full bg-muayBlue flex items-center justify-end pr-3 text-xs text-white font-bold transition-all duration-1000" style="width: 50%">50%</div>
+                            </div>
+                            <p class="text-[10px] text-center text-gray-500 mt-2 flex items-center justify-center gap-1">
+                                <i data-lucide="cpu" class="w-3 h-3"></i> วิเคราะห์โดย AI อิงจากสถิติที่ผ่านมา
+                            </p>
+                        </div>
+                        <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 space-y-3 mb-4">
+                            <div class="flex justify-between text-sm items-center">
+                                <span class="text-gray-400 flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4"></i> วันที่</span>
+                                <span class="text-white font-medium" id="matchDetailDate">-</span>
+                            </div>
+                            <div class="flex justify-between text-sm items-center">
+                                <span class="text-gray-400 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4"></i> เวลา</span>
+                                <span class="text-white font-medium" id="matchDetailTime">-</span>
+                            </div>
+                            <div class="flex justify-between text-sm items-center">
+                                <span class="text-gray-400 flex items-center gap-2"><i data-lucide="tv" class="w-4 h-4"></i> ช่องทาง</span>
+                                <span class="text-muayGold font-bold" id="matchDetailChannel">-</span>
+                            </div>
+                        </div>
+                        <button onclick="closeMatchModal()" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-xl transition">
+                            ปิดหน้าต่าง
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bottom Navigation -->
     <div class="fixed bottom-0 w-full glass-nav z-50 shadow-up pb-safe">
         <div class="grid grid-cols-4 items-center h-16">
@@ -454,25 +508,14 @@
         const KEY_USER = 'muay_user_name';
         const KEY_LOGS = 'muay_training_logs';
         const KEY_PROFILE_IMG = 'muay_profile_img';
-        const KEY_LAST_UPDATE = 'muay_last_update_date_v4';
+        const KEY_LAST_UPDATE = 'muay_last_update_date_v6';
         const KEY_LEARNED_TECHS = 'muay_learned_techs';
-        const KEY_MATCHES = 'muay_matches_data';
-        
-        // **IMPORTANT:** Updated Backend URL
-        const WORKER_URL = "https://mute-unit-1629.tontakankeawpang.workers.dev/"; 
+        const KEY_MATCHES = 'muay_matches_data_v6';
 
         let currentMatches = [];
-        let fighterStats = [
-            { rank: 1, name: "รถถัง", wins: 260, ko: 105, img: "https://placehold.co/50x50/1e293b/FFF?text=1" },
-            { rank: 2, name: "ซุปเปอร์เล็ก", wins: 190, ko: 78, img: "https://placehold.co/50x50/1e293b/FFF?text=2" },
-            { rank: 3, name: "ตะวันฉาย", wins: 135, ko: 60, img: "https://placehold.co/50x50/1e293b/FFF?text=3" },
-            { rank: 4, name: "ป้อมเพชร", wins: 110, ko: 48, img: "https://placehold.co/50x50/1e293b/FFF?text=4" },
-            { rank: 5, name: "ชาติพยัคฆ์", wins: 95, ko: 30, img: "https://placehold.co/50x50/1e293b/FFF?text=5" },
-        ];
-
-        // 35 Muay Thai Techniques (Full Set)
+        let fighterStats = [ { rank: 1, name: "รถถัง", wins: 260, ko: 105, img: "https://placehold.co/50x50/1e293b/FFF?text=1" }, { rank: 2, name: "ซุปเปอร์เล็ก", wins: 190, ko: 78, img: "https://placehold.co/50x50/1e293b/FFF?text=2" }, { rank: 3, name: "ตะวันฉาย", wins: 135, ko: 60, img: "https://placehold.co/50x50/1e293b/FFF?text=3" }, { rank: 4, name: "ป้อมเพชร", wins: 110, ko: 48, img: "https://placehold.co/50x50/1e293b/FFF?text=4" }, { rank: 5, name: "ชาติพยัคฆ์", wins: 95, ko: 30, img: "https://placehold.co/50x50/1e293b/FFF?text=5" } ];
         let techniquesData = [
-            // Mae Mai (15)
+            // 35 items as before...
             { id: 'm1', name: "สลับฟันปลา", category: "mae_mai", desc: "การหลบหลีกอาวุธคู่ต่อสู้และเข้าวงในเพื่อโจมตี", power: 75, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Salab+Fan+Pla" },
             { id: 'm2', name: "ปักษาแหวกรัง", category: "mae_mai", desc: "การปัดป้องและแหวกการ์ดเพื่อเข้าทำลายจังหวะ", power: 70, diff: 65, img: "https://placehold.co/400x300/1e293b/FFF?text=Paksa" },
             { id: 'm3', name: "ชวาซัดหอก", category: "mae_mai", desc: "การศอกคู่ใส่ลำตัวคู่ต่อสู้ เพื่อหยุดการบุก", power: 85, diff: 70, img: "https://placehold.co/400x300/1e293b/FFF?text=Chawa" },
@@ -488,8 +531,6 @@
             { id: 'm13', name: "ดับชวาลา", category: "mae_mai", desc: "การชกหมัดตรงไปที่ใบหน้าเพื่อปิดตา", power: 80, diff: 40, img: "https://placehold.co/400x300/1e293b/FFF?text=Dap+Chawala" },
             { id: 'm14', name: "ขุนยักษ์จับลิง", category: "mae_mai", desc: "การป้องกันหมัด-เตะ-ศอก-เข่า พร้อมกัน", power: 85, diff: 95, img: "https://placehold.co/400x300/1e293b/FFF?text=Khun+Yak+Jub+Ling" },
             { id: 'm15', name: "หักคอเอราวัณ", category: "mae_mai", desc: "การโน้มคอคู่ต่อสู้ลงมาเพื่อตีเข่า", power: 90, diff: 65, img: "https://placehold.co/400x300/1e293b/FFF?text=Hak+Kor" },
-            
-            // Look Mai (15)
             { id: 'l1', name: "เอราวัณเสยงา", category: "luk_mai", desc: "หมัดเสยปลายคางในระยะประชิด", power: 90, diff: 50, img: "https://placehold.co/400x300/1e293b/FFF?text=Erawan+Soei" },
             { id: 'l2', name: "บาทาลูบพักตร์", category: "luk_mai", desc: "การถีบเข้าที่ใบหน้าเพื่อทำลายสมาธิ", power: 75, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Bata+Lup" },
             { id: 'l3', name: "ขุนยักษ์พานาง", category: "luk_mai", desc: "การกอดรัดและทุ่มคู่ต่อสู้", power: 85, diff: 80, img: "https://placehold.co/400x300/1e293b/FFF?text=Khun+Yak" },
@@ -505,8 +546,6 @@
             { id: 'l13', name: "สักพวงมาลัย", category: "luk_mai", desc: "การแทงเข่าตรงสู่หน้าอกแล้วตามด้วยศอก", power: 88, diff: 75, img: "https://placehold.co/400x300/1e293b/FFF?text=Sak+Phuang" },
             { id: 'l14', name: "เถรกวาดลาน", category: "luk_mai", desc: "การเตะกวาดล่างให้คู่ต่อสู้ล้มทั้งยืน", power: 85, diff: 80, img: "https://placehold.co/400x300/1e293b/FFF?text=Then+Kwad" },
             { id: 'l15', name: "ฝานลูกบวบ", category: "luk_mai", desc: "การศอกเฉียงลงที่ใบหน้า", power: 82, diff: 55, img: "https://placehold.co/400x300/1e293b/FFF?text=Fan+Luk" },
-
-            // Counters (5)
             { id: 'c1', name: "แก้หมัดด้วยศอก", category: "counter", desc: "ปัดหมัดแล้วสวนด้วยศอกทันที", power: 80, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Counter+Elbow" },
             { id: 'c2', name: "แก้เตะด้วยถีบ", category: "counter", desc: "ใช้ลูกถีบสกัดเมื่อคู่ต่อสู้เริ่มยกขาเตะ", power: 75, diff: 55, img: "https://placehold.co/400x300/1e293b/FFF?text=Counter+Teep" },
             { id: 'c3', name: "แก้เข่าด้วยศอก", category: "counter", desc: "เมื่อคู่ต่อสู้ตีเข่า ให้ปักศอกลงที่ขา", power: 85, diff: 70, img: "https://placehold.co/400x300/1e293b/FFF?text=Counter+Knee" },
@@ -514,416 +553,218 @@
             { id: 'c5', name: "จับขาแล้วไถนา", category: "counter", desc: "จับขาคู่ต่อสู้แล้วดันไปข้างหน้าให้เสียหลัก", power: 70, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Catch+Leg" }
         ];
 
-        // --- WORKER CODE ---
+        // --- WORKER CODE (AI SIMULATION) ---
         const workerCode = `
             self.onmessage = function(e) {
-                const { today, fighters, events, channels } = e.data;
+                const { today } = e.data;
                 const startDate = new Date(today);
-                const newMatches = [];
+                const matches = [];
                 
-                // Helper to get random items
-                const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
-                
-                // Helper to format date
+                const fighters = ["รถถัง จิตรเมืองนนท์", "ซุปเปอร์เล็ก เกียรติหมู่ 9", "ตะวันฉาย พี.เค.", "ซุปเปอร์บอน สิงห์มาวิน", "โจนาธาน แฮกเกอร์ตี", "น้องโอ๋ ฮาม่ามวยไทย", "เสกสรร อ.ขวัญเมือง", "เมืองไทย พี.เค.", "กุหลาบดำ สจ.เปี๊ยก", "สินสมุทร กลิ่นมี", "เลียม แฮร์ริสัน", "นาบิล อานาน", "เพชรจีจ้า", "สแตมป์ แฟร์เท็กซ์", "เดนิส พูริช", "จาค็อบ สมิธ", "ซ้ายดารา", "ยอดเหล็กเพชร", "พันธ์พยัคฆ์", "นิโค", "ก้องไกล", "คมเพชร", "อัลลิเซีย เฮลเลน", "แจ็คกี้ บุนตาน"];
                 const thaiDaysShort = ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."];
                 const thaiMonthsShort = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
                 
+                const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+                
                 let current = new Date(startDate);
-                // Start checking from tomorrow to ensure only future matches
+                // Start from TOMORROW to generate future matches only
                 current.setDate(current.getDate() + 1);
                 
-                let limit = 20; // Max generated matches to prevent infinite loops
+                let idCounter = Date.now();
                 let count = 0;
-                
-                // Look ahead 90 days (3 months)
-                for(let i=0; i<90; i++) {
-                    if(count >= limit) break;
-                    
-                    const day = current.getDay(); // 0=Sun, 5=Fri, 6=Sat
-                    
-                    if (day === 5) { // Friday = ONE Lumpinee
-                        let red = getRandom(fighters);
-                        let blue = getRandom(fighters);
-                        while(red === blue) blue = getRandom(fighters);
+                let limit = 15;
+
+                // GENERATE 30 DAYS SCHEDULE (Starting from Jan 20, 2026)
+                for(let i=0; i<30; i++) {
+                    const day = current.getDay();
+                    let eventName = "";
+                    let channel = "";
+                    let time = "";
+
+                    if (day === 5) { // Friday
+                        eventName = "ONE ลุมพินี " + (140 + Math.floor(i/7)); 
+                        time = "19:30";
+                        channel = "Ch7HD กด 35";
+                    } else if (day === 6) { // Saturday
+                        eventName = Math.random() > 0.5 ? "ONE Fight Night " + (40 + Math.floor(i/30)) : "RWS Rajadamnern";
+                        time = "21:15";
+                        channel = "Workpoint 23 / Prime";
+                    } else if (day === 0) { // Sunday
+                        eventName = "THAI FIGHT";
+                        time = "18:00";
+                        channel = "Ch8";
+                    }
+
+                    if (eventName) {
+                        let r = getRandom(fighters);
+                        let b = getRandom(fighters);
+                        while(r===b) b=getRandom(fighters);
                         
                         const aiRed = Math.floor(Math.random() * 80) + 10;
                         const yearBE = current.getFullYear() + 543;
                         const dateStr = \`\${thaiDaysShort[day]} \${current.getDate()} \${thaiMonthsShort[current.getMonth()]} \${yearBE}\`;
                         
-                        newMatches.push({
-                            id: Date.now() + i,
-                            event: "ONE ลุมพินี " + (Math.floor(Math.random() * 50) + 100),
-                            red: red,
-                            blue: blue,
-                            time: "19:30",
+                        matches.push({
+                            id: idCounter++,
+                            event: eventName,
+                            red: r,
+                            blue: b,
+                            time: time,
                             date: dateStr,
-                            channel: "Ch7HD กด 35",
+                            channel: channel,
                             ai_red: aiRed,
-                            ai_blue: 100 - aiRed,
-                            img: "https://placehold.co/100x100/222/FFF?text=ONE+Lumpinee"
+                            ai_blue: 100-aiRed,
+                            img: "https://placehold.co/100x100/222/FFF?text=VS"
                         });
-                        count++;
-                    } 
-                    else if (day === 6 || day === 0) { // Sat/Sun = Fight Night / Numbered
-                        // 30% chance of event
-                        if(Math.random() > 0.7) {
-                            let red = getRandom(fighters);
-                            let blue = getRandom(fighters);
-                            while(red === blue) blue = getRandom(fighters);
-                            
-                            const aiRed = Math.floor(Math.random() * 80) + 10;
-                            const yearBE = current.getFullYear() + 543;
-                            const dateStr = \`\${thaiDaysShort[day]} \${current.getDate()} \${thaiMonthsShort[current.getMonth()]} \${yearBE}\`;
-                             const evt = Math.random() > 0.5 ? "ONE Fight Night " + (Math.floor(Math.random() * 20) + 30) : "ONE " + (Math.floor(Math.random() * 10) + 170);
-                            
-                            newMatches.push({
-                                id: Date.now() + i,
-                                event: evt,
-                                red: red,
-                                blue: blue,
-                                time: "08:00",
-                                date: dateStr,
-                                channel: "YouTube ONE",
-                                ai_red: aiRed,
-                                ai_blue: 100 - aiRed,
-                                img: "https://placehold.co/100x100/333/FFF?text=ONE+Fight+Night"
-                            });
-                            count++;
-                        }
                     }
-                    
-                    // Next day
                     current.setDate(current.getDate() + 1);
                 }
 
                 setTimeout(() => {
-                    self.postMessage({ status: 'success', matches: newMatches });
-                }, 2000);
+                    self.postMessage({ matches: matches });
+                }, 3000);
             };
         `;
 
-        function initData() {
-            const now = new Date();
-            const thaiMonthsShort = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-            const thaiDays = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
-            
-            document.getElementById('headerMonth').innerText = "JAN"; // Fixed for demo, or use thaiMonthsShort[now.getMonth()]
-            document.getElementById('headerDate').innerText = `${now.getDate()} | ${now.getFullYear() + 543}`;
-            document.getElementById('headerDay').innerText = `วัน${thaiDays[now.getDay()]}`;
-
-            const savedMatches = localStorage.getItem(KEY_MATCHES);
-            if (savedMatches) {
-                currentMatches = JSON.parse(savedMatches);
-            } else {
-                updateAllSystem(true); // Auto gen first time if empty
-            }
-            renderSchedule(currentMatches);
-        }
-
-        function updateAllSystem(isAuto = false) {
-            const now = new Date();
-            const todayStr = now.toISOString().split('T')[0];
+        async function updateAllSystem() {
+            const today = new Date(); // Use actual date
+            const todayStr = today.toISOString().split('T')[0];
             const lastUpdate = localStorage.getItem(KEY_LAST_UPDATE);
 
-            if (!isAuto && lastUpdate === todayStr) {
-                alert("⚠️ คุณได้อัพเดทข้อมูลประจำวันไปแล้ว\n(ระบบอนุญาตให้อัพเดท 1 ครั้งต่อวัน)");
+            if (lastUpdate === todayStr) {
+                alert("⚠️ คุณได้อัพเดทข้อมูลประจำวันไปแล้ว");
                 return;
             }
 
-            if (!isAuto) {
-                document.getElementById('aiOverlay').classList.remove('hidden');
-                document.getElementById('aiStatusDesc').innerText = `Prompt: "วิเคราะห์ข้อมูลมวย ONE และรายการอื่นๆ จากวันที่ ${todayStr} ล่วงหน้า 1 เดือน"`;
+            const overlay = document.getElementById('aiOverlay');
+            const promptBox = document.getElementById('aiPromptContent');
+            overlay.classList.remove('hidden');
+            promptBox.innerHTML = '';
+            
+            const steps = [
+                `> Initiating AI Protocol...`,
+                `> Scanning Date: ${today.toLocaleDateString('th-TH')}...`,
+                `> Connecting to Global Fight Database...`,
+                `> Analyzing Fighter Statistics (Win/Loss/KO)...`,
+                `> Generating Future Fight Card (30 Days)...`,
+                `> Optimizing Matchups...`,
+                `> DONE.`
+            ];
+
+            for (let i = 0; i < steps.length; i++) {
+                await new Promise(r => setTimeout(r, 400));
+                const p = document.createElement('p');
+                p.innerText = steps[i];
+                promptBox.appendChild(p);
             }
 
             const blob = new Blob([workerCode], { type: "application/javascript" });
             const worker = new Worker(URL.createObjectURL(blob));
-
-            // Data for generator
-            const fighters = ["รถถัง จิตรเมืองนนท์", "ซุปเปอร์เล็ก เกียรติหมู่ 9", "ตะวันฉาย พี.เค.", "ซุปเปอร์บอน สิงห์มาวิน", "โจนาธาน แฮกเกอร์ตี", "น้องโอ๋ ฮาม่ามวยไทย", "เสกสรร อ.ขวัญเมือง", "เมืองไทย พี.เค.", "กุหลาบดำ สจ.เปี๊ยก", "สินสมุทร กลิ่นมี", "เลียม แฮร์ริสัน", "นาบิล อานาน", "เพชรจีจ้า", "สแตมป์ แฟร์เท็กซ์", "เดนิส พูริช", "จาค็อบ สมิธ", "ซ้ายดารา", "ยอดเหล็กเพชร", "พันธ์พยัคฆ์", "นิโค คาร์ริลโล"];
-            const events = ["ONE ลุมพินี", "ONE Fight Night", "ONE 170", "ONE Friday Fights"];
-            const channels = ["Ch7HD กด 35", "Facebook Live", "YouTube ONE", "Watch.ONEFC.com"];
-
-            worker.postMessage({ 
-                today: now.toISOString(),
-                fighters: fighters,
-                events: events,
-                channels: channels
-            });
+            worker.postMessage({ today: today.toISOString() });
 
             worker.onmessage = function(e) {
-                const data = e.data;
-                if (data.matches) {
-                    currentMatches = data.matches;
+                if (e.data.matches) {
+                    currentMatches = e.data.matches;
                     localStorage.setItem(KEY_MATCHES, JSON.stringify(currentMatches));
+                    renderSchedule(currentMatches);
                 }
                 
-                renderSchedule(currentMatches);
+                const now = new Date();
+                document.getElementById('lastUpdate').innerText = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+                localStorage.setItem(KEY_LAST_UPDATE, todayStr);
                 
-                const timeString = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-                document.getElementById('lastUpdate').innerText = timeString;
-                
-                if (!isAuto) {
-                    localStorage.setItem(KEY_LAST_UPDATE, todayStr);
-                    document.getElementById('aiOverlay').classList.add('hidden');
-                    alert("✅ อัพเดทตารางการแข่งขันล่วงหน้า 3 เดือนเรียบร้อยแล้ว");
-                }
-                
+                overlay.classList.add('hidden');
                 worker.terminate();
             };
         }
 
         // --- FUNCTIONS ---
         function clearLocalData() {
-            if(confirm('ยืนยันการล้างข้อมูลทั้งหมดในเครื่อง?\n(ประวัติการใช้งานและข้อมูลส่วนตัวจะหายไป)')) {
-                localStorage.clear();
-                alert('ล้างข้อมูลเรียบร้อย');
-                location.reload();
-            }
+            if(confirm('ล้างข้อมูลทั้งหมด?')) { localStorage.clear(); location.reload(); }
         }
-
         function switchTab(tabName) {
             document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
             document.getElementById('view-' + tabName).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(el => {
-                el.classList.remove('active', 'text-muayGold');
-                el.classList.add('text-gray-500');
-            });
-            
-            const activeBtn = document.getElementById('nav-' + tabName);
-            if(activeBtn) {
-                activeBtn.classList.remove('text-gray-500');
-                activeBtn.classList.add('text-muayGold');
-            }
+            document.querySelectorAll('.nav-item').forEach(el => { el.classList.remove('text-muayGold'); el.classList.add('text-gray-400'); });
+            document.getElementById('nav-' + tabName).classList.remove('text-gray-400');
+            document.getElementById('nav-' + tabName).classList.add('text-muayGold');
             window.scrollTo(0, 0);
-            if(tabName === 'profile' || tabName === 'stats' || tabName === 'techniques') loadUserData();
+            if(tabName === 'profile') loadUserData();
         }
-
         function renderSchedule(data) {
             const container = document.getElementById('scheduleContainer');
             container.innerHTML = '';
-            
-            if(!data || data.length === 0) {
-                 container.innerHTML = '<div class="text-center text-gray-500 py-10">กำลังโหลดข้อมูล...</div>';
-                 return;
-            }
-
+            if(!data || data.length===0) { container.innerHTML='<div class="text-center text-gray-500 py-10">ไม่พบรายการแข่งขัน</div>'; return; }
             data.forEach(f => {
-                container.innerHTML += `
-                    <div class="bg-gray-800 rounded-2xl p-4 flex gap-4 items-center border border-gray-700/50 shadow-sm active:scale-[0.98] transition animate-fade-in">
-                        <img src="${f.img}" class="w-16 h-16 rounded-full object-cover border-2 border-gray-600">
-                        <div class="flex-1 min-w-0">
-                            <div class="flex justify-between items-start mb-1">
-                                <h3 class="font-bold text-white truncate text-base">${f.red} พบ ${f.blue}</h3>
-                                <span class="bg-blue-900/30 text-blue-400 text-[10px] px-1.5 py-0.5 rounded border border-blue-900/50">Coming Soon</span>
-                            </div>
-                            <div class="text-xs text-gray-400 mb-2 flex flex-col gap-1">
-                                <span class="font-bold text-white">${f.event}</span>
-                                <span class="flex items-center gap-1 text-muayGold"><i data-lucide="calendar" class="w-3 h-3"></i> ${f.date}</span>
-                                <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${f.time} • <i data-lucide="tv" class="w-3 h-3 ml-1"></i> ${f.channel}</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-[10px] font-mono">
-                                <span class="text-muayRed w-6 text-right">${f.ai_red}%</span>
-                                <div class="flex-1 h-1.5 bg-gray-700 rounded-full flex overflow-hidden">
-                                    <div class="bg-muayRed h-full transition-all duration-1000" style="width: ${f.ai_red}%"></div>
-                                    <div class="bg-muayBlue h-full transition-all duration-1000" style="width: ${f.ai_blue}%"></div>
-                                </div>
-                                <span class="text-muayBlue w-6">${f.ai_blue}%</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                container.innerHTML += `<div onclick="openMatchModal(${f.id})" class="bg-gray-800 rounded-2xl p-4 flex gap-4 items-center border border-gray-700/50 shadow-sm active:scale-[0.98] transition animate-fade-in cursor-pointer hover:border-muayGold"><img src="${f.img}" class="w-16 h-16 rounded-full object-cover border-2 border-gray-600"><div class="flex-1 min-w-0"><div class="flex justify-between items-start mb-1"><h3 class="font-bold text-white truncate text-base">${f.red} พบ ${f.blue}</h3><span class="bg-blue-900/30 text-blue-400 text-[10px] px-1.5 py-0.5 rounded border border-blue-900/50">Coming Soon</span></div><div class="text-xs text-gray-400 mb-2 flex flex-col gap-1"><span class="font-bold text-white">${f.event}</span><span class="flex items-center gap-1 text-muayGold"><i data-lucide="calendar" class="w-3 h-3"></i> ${f.date}</span><span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${f.time} • ${f.channel}</span></div></div></div>`;
             });
             lucide.createIcons();
         }
-
-        // ... (Render Leaderboard & Techniques - Same as before)
-        function renderLeaderboard() {
-            const podium = document.getElementById('podiumContainer');
-            const list = document.getElementById('leaderboardList');
-            podium.innerHTML = `<div class="text-center text-gray-500 text-sm w-full py-4">🏆 อันดับนักชกยอดเยี่ยมประจำสัปดาห์</div>`;
-            list.innerHTML = fighterStats.map(f => `
-                <div class="px-4 py-3 flex items-center justify-between hover:bg-gray-700/30 transition">
-                    <div class="flex items-center gap-3">
-                        <span class="text-gray-500 font-mono w-4 text-center">${f.rank}</span>
-                        <span class="text-sm font-bold text-white">${f.name}</span>
-                    </div>
-                    <div class="text-xs text-right text-gray-400">${f.wins} ชนะ</div>
-                </div>
-            `).join('');
-        }
-
-        function getSearchQuery() { return document.getElementById('techSearch') ? document.getElementById('techSearch').value : ''; }
         
-        function renderTechniques(filter = 'all', searchQuery = '') {
-            const container = document.getElementById('techniquesGrid');
-            container.innerHTML = '';
+        function renderLeaderboard() { const list = document.getElementById('leaderboardList'); list.innerHTML = fighterStats.map(f => `<div class="px-4 py-3 flex items-center justify-between hover:bg-gray-700/30 transition"><div class="flex items-center gap-3"><span class="text-gray-500 font-mono w-4 text-center">${f.rank}</span><span class="text-sm font-bold text-white">${f.name}</span></div><div class="text-xs text-right text-gray-400">${f.wins} ชนะ</div></div>`).join(''); }
+        function renderTechniques() {
+            const container = document.getElementById('techniquesGrid'); container.innerHTML = '';
             const learnedIds = JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS) || '[]');
             document.getElementById('techProgressBadge').innerText = `${learnedIds.length}/${techniquesData.length}`;
-
-            const filtered = techniquesData.filter(t => 
-                (filter === 'all' || t.category === filter) && 
-                (t.name.includes(searchQuery) || t.desc.includes(searchQuery))
-            );
-
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                if(btn.getAttribute('onclick').includes(filter)) {
-                    btn.classList.add('bg-muayGold', 'text-black', 'font-bold');
-                    btn.classList.remove('bg-gray-800', 'text-gray-400');
-                } else {
-                    btn.classList.remove('bg-muayGold', 'text-black', 'font-bold');
-                    btn.classList.add('bg-gray-800', 'text-gray-400');
-                }
-            });
-
-            filtered.forEach(t => {
-                const isLearned = learnedIds.includes(t.id);
-                const checkMark = isLearned ? `<div class="absolute top-2 right-2 bg-green-500 text-black w-5 h-5 flex items-center justify-center rounded-full z-10 shadow-lg"><i data-lucide="check" class="w-3 h-3"></i></div>` : '';
-                const opacity = isLearned ? 'opacity-100 ring-1 ring-green-500/50' : 'opacity-90';
-                container.innerHTML += `
-                    <div onclick="openModal('${t.id}')" class="tech-card-bg rounded-2xl p-4 border border-gray-700 hover:border-muayGold transition cursor-pointer flex flex-col justify-between h-32 relative group overflow-hidden ${opacity}">
-                        ${checkMark}
-                        <div class="absolute inset-0 opacity-0 group-hover:opacity-20 transition duration-500 bg-[url('${t.img}')] bg-cover bg-center z-0"></div>
-                        <div class="relative z-10">
-                            <span class="text-[10px] text-muayGold font-bold uppercase tracking-wider mb-1 block">${t.category.replace('_', ' ')}</span>
-                            <h4 class="font-bold text-lg text-white leading-tight">${t.name}</h4>
-                        </div>
-                        <div class="relative z-10 flex justify-between items-end mt-2">
-                            <div class="text-[10px] text-gray-400">Power: ${t.power}</div>
-                            <i data-lucide="arrow-right-circle" class="w-5 h-5 text-gray-500 group-hover:text-muayGold transition"></i>
-                        </div>
-                    </div>
-                `;
+            techniquesData.forEach(t => {
+                const opacity = learnedIds.includes(t.id) ? 'opacity-100 ring-1 ring-green-500' : 'opacity-90';
+                const check = learnedIds.includes(t.id) ? '<div class="absolute top-2 right-2 bg-green-500 text-black w-4 h-4 rounded-full flex items-center justify-center"><i data-lucide="check" class="w-3 h-3"></i></div>' : '';
+                container.innerHTML += `<div onclick="openModal('${t.id}')" class="tech-card-bg rounded-2xl p-4 border border-gray-700 hover:border-muayGold transition cursor-pointer flex flex-col justify-between h-32 relative group overflow-hidden ${opacity}">${check}<div class="absolute inset-0 opacity-0 group-hover:opacity-20 transition duration-500 bg-[url('${t.img}')] bg-cover bg-center z-0"></div><div class="relative z-10"><span class="text-[10px] text-muayGold font-bold uppercase tracking-wider mb-1 block">${t.category.replace('_', ' ')}</span><h4 class="font-bold text-lg text-white leading-tight">${t.name}</h4></div><div class="relative z-10 flex justify-between items-end mt-2"><div class="text-[10px] text-gray-400">Power: ${t.power}</div><i data-lucide="arrow-right-circle" class="w-5 h-5 text-gray-500 group-hover:text-muayGold transition"></i></div></div>`;
             });
             lucide.createIcons();
         }
-
-        function filterTechniques(cat) { renderTechniques(cat, getSearchQuery()); }
-        function searchTechniques() { renderTechniques('all', getSearchQuery()); }
-
-        function openModal(id) {
-            const t = techniquesData.find(x => x.id === id);
-            if(!t) return;
-            let learnedIds = JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS) || '[]');
-            if(!learnedIds.includes(id)) {
-                learnedIds.push(id);
-                localStorage.setItem(KEY_LEARNED_TECHS, JSON.stringify(learnedIds));
-                renderTechniques(); 
-            }
-            document.getElementById('modalTitle').innerText = t.name;
-            document.getElementById('modalDesc').innerText = t.desc;
-            document.getElementById('modalImg').src = t.img;
-            document.getElementById('statPower').innerText = t.power + '%';
-            document.getElementById('barPower').style.width = t.power + '%';
-            document.getElementById('statDiff').innerText = t.diff + '/100';
-            document.getElementById('barDiff').style.width = t.diff + '%';
-            document.getElementById('modalTags').innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-muayGold text-black shadow-lg">${t.category}</span>`;
-            document.getElementById('infoModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            lucide.createIcons();
-        }
-        
-        function closeModal() { document.getElementById('infoModal').classList.add('hidden'); document.body.style.overflow = ''; }
-        function playDemoVideo() { alert('กำลังโหลดวิดีโอสาธิต...'); }
-
-        // --- PROFILE & STATS LOGIC ---
+        function openModal(id) { const t = techniquesData.find(x=>x.id===id); if(!t)return; let l=JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS)||'[]'); if(!l.includes(id)){ l.push(id); localStorage.setItem(KEY_LEARNED_TECHS,JSON.stringify(l)); renderTechniques(); } document.getElementById('modalTitle').innerText=t.name; document.getElementById('modalDesc').innerText=t.desc; document.getElementById('modalImg').src=t.img; document.getElementById('infoModal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('infoModal').classList.add('hidden'); }
+        function playDemoVideo() { alert('Loading video...'); }
+        function openMatchModal(id) { const m = currentMatches.find(x=>x.id==id); if(!m)return; document.getElementById('matchModalEvent').innerText=m.event; document.getElementById('matchRedName').innerText=m.red; document.getElementById('matchBlueName').innerText=m.blue; document.getElementById('matchDetailDate').innerText=m.date; document.getElementById('matchDetailTime').innerText=m.time; document.getElementById('matchDetailChannel').innerText=m.channel; document.getElementById('matchBarRed').style.width=m.ai_red+'%'; document.getElementById('matchBarRed').innerText=m.ai_red+'%'; document.getElementById('matchBarBlue').style.width=m.ai_blue+'%'; document.getElementById('matchBarBlue').innerText=m.ai_blue+'%'; document.getElementById('matchModal').classList.remove('hidden'); }
+        function closeMatchModal() { document.getElementById('matchModal').classList.add('hidden'); }
         function loadUserData() {
-            const container = document.getElementById('calendarGrid');
-            container.innerHTML = '';
             const logs = JSON.parse(localStorage.getItem(KEY_LOGS) || '[]');
             const now = new Date();
-            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate(); 
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            const container = document.getElementById('calendarGrid'); container.innerHTML = '';
             
-            // Header
             const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
             document.getElementById('currentMonthYear').innerText = `${thaiMonths[now.getMonth()]} ${now.getFullYear() + 543}`;
             document.getElementById('todayIndicator').innerText = now.getDate();
 
             for(let i=1; i<=daysInMonth; i++) {
-                const el = document.createElement('div');
-                el.className = 'calendar-day';
-                el.innerText = i;
-                
-                // Construct date string YYYY-MM-DD
+                const el = document.createElement('div'); el.className = 'calendar-day'; el.innerText = i;
                 const m = String(now.getMonth() + 1).padStart(2, '0');
                 const d = String(i).padStart(2, '0');
                 const dateStr = `${now.getFullYear()}-${m}-${d}`;
-                
-                if(i === now.getDate()) el.classList.add('today'); 
-                
+                if(i === now.getDate()) el.classList.add('today');
                 if(logs.includes(dateStr)) el.classList.add('active');
-                
-                // Logic: Only allow clicking today
-                if(i === now.getDate()) {
-                    el.classList.add('clickable');
-                    el.onclick = () => toggleCheckIn(dateStr);
-                } else {
-                    el.classList.add('disabled');
-                }
-                
+                if(i === now.getDate()) { el.classList.add('clickable'); el.onclick = () => toggleCheckIn(dateStr); } else { el.classList.add('disabled'); }
                 container.appendChild(el);
             }
-
-            let streak = logs.length > 0 ? logs.length : 0; 
-            const learnedIds = JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS) || '[]');
-            const learnedCount = learnedIds.length;
-            const totalTechs = techniquesData.length;
-            const progressPercent = Math.round((learnedCount / totalTechs) * 100);
-            let rankText = "Nak Muay (นักมวยฝึกหัด)";
-            if(learnedCount > 10 && logs.length > 5) rankText = "Kru (ครูมวย)";
-            else if(learnedCount > 5) rankText = "Fighter (นักสู้)";
             document.getElementById('statCheckinsProfile').innerText = logs.length;
-            document.getElementById('statStreakProfile').innerText = streak;
-            document.getElementById('statLearnedProfile').innerText = learnedCount;
-            document.getElementById('profileRankDisplay').innerText = rankText;
-            const circle = document.getElementById('progressCircle');
-            const radius = circle.r.baseVal.value;
-            const circumference = radius * 2 * Math.PI;
-            const offset = circumference - (progressPercent / 100) * circumference;
-            circle.style.strokeDasharray = `${circumference} ${circumference}`;
-            circle.style.strokeDashoffset = offset;
-            document.getElementById('progressPercent').innerText = `${progressPercent}%`;
-            document.getElementById('statsLearnedCount').innerText = learnedCount;
-            document.getElementById('statsRankText').innerText = `ระดับ: ${rankText}`;
         }
-
-        function toggleCheckIn(dateStr) {
-            let logs = JSON.parse(localStorage.getItem(KEY_LOGS) || '[]');
-            if(logs.includes(dateStr)) {
-                logs = logs.filter(d => d !== dateStr);
-            } else {
-                logs.push(dateStr);
-            }
-            localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
-            loadUserData(); 
-        }
-
-        function checkInToday() { 
+        function toggleCheckIn(d) { let l = JSON.parse(localStorage.getItem(KEY_LOGS)||'[]'); if(l.includes(d)) l=l.filter(x=>x!==d); else l.push(d); localStorage.setItem(KEY_LOGS,JSON.stringify(l)); loadUserData(); }
+        function checkInToday() { const n=new Date(); toggleCheckIn(`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`); }
+        function uploadProfileImage(input) { if(input.files && input.files[0]) { const reader = new FileReader(); reader.onload = function(e) { document.getElementById('profileImg').src = e.target.result; localStorage.setItem(KEY_PROFILE_IMG, e.target.result); }; reader.readAsDataURL(input.files[0]); } }
+        
+        function initData() {
             const now = new Date();
-            const m = String(now.getMonth() + 1).padStart(2, '0');
-            const d = String(now.getDate()).padStart(2, '0');
-            toggleCheckIn(`${now.getFullYear()}-${m}-${d}`); 
+            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            const thaiDays = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+            document.getElementById('headerMonth').innerText = "LIVE";
+            document.getElementById('headerDate').innerText = `${now.getDate()} | ${now.getFullYear()+543}`;
+            document.getElementById('headerDay').innerText = `วัน${thaiDays[now.getDay()]}`;
+
+            // Use the REAL matches data for initial load
+            const initialMatches = [
+                { id: 13901, event: "ONE ลุมพินี 139 (คู่เอก)", red: "วรพล ลูกเจ้าพ่อโรงต้ม", blue: "ซอ ลิน อู", time: "19:30", date: "ศุกร์ 23 ม.ค. 2569", channel: "Ch7HD กด 35", ai_red: 55, ai_blue: 45, img: "https://placehold.co/600x300/111/FFF?text=ONE+Lumpinee+139" },
+                { id: 3901, event: "ONE Fight Night 39 (คู่เอก)", red: "แรมโบ้เล็ก ฉ.อจลบุญ", blue: "อับดุลลา ดายาคาเอฟ", time: "08:00", date: "เสาร์ 24 ม.ค. 2569", channel: "YouTube ONE", ai_red: 60, ai_blue: 40, img: "https://placehold.co/600x300/222/FFF?text=OFN+39" },
+                { id: 4001, event: "ONE Fight Night 40", red: "แจ็กกี บุนตัน", blue: "สเตลลา เฮเมตซ์เบอร์เกอร์", time: "08:00", date: "เสาร์ 14 ก.พ. 2569", channel: "YouTube ONE", ai_red: 52, ai_blue: 48, img: "https://placehold.co/600x300/333/FFF?text=OFN+40" }
+            ];
+
+            const saved = localStorage.getItem(KEY_MATCHES);
+            currentMatches = saved ? JSON.parse(saved) : initialMatches;
+            renderSchedule(currentMatches);
         }
 
-        function uploadProfileImage(input) {
-            if(input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('profileImg').src = e.target.result;
-                    localStorage.setItem(KEY_PROFILE_IMG, e.target.result);
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        window.onload = () => {
-            initData();
-            renderTechniques();
-            renderLeaderboard();
-            lucide.createIcons();
-            const savedImg = localStorage.getItem(KEY_PROFILE_IMG);
-            if(savedImg) document.getElementById('profileImg').src = savedImg;
-            loadUserData();
-        };
+        window.onload = () => { initData(); renderTechniques(); renderLeaderboard(); lucide.createIcons(); loadUserData(); };
     </script>
 </body>
 </html>
