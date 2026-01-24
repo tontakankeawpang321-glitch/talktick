@@ -35,6 +35,7 @@
                     animation: {
                         'fade-in': 'fadeIn 0.5s ease-out',
                         'slide-up': 'slideUp 0.3s ease-out',
+                        'typing': 'typing 2s steps(40, end)',
                     },
                     keyframes: {
                         fadeIn: {
@@ -44,6 +45,10 @@
                         slideUp: {
                             '0%': { transform: 'translateY(100%)' },
                             '100%': { transform: 'translateY(0)' },
+                        },
+                        typing: {
+                            'from': { width: '0' },
+                            'to': { width: '100%' },
                         }
                     }
                 }
@@ -134,17 +139,12 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Console Cursor */
-        .cursor-blink {
-            display: inline-block;
-            width: 6px;
-            height: 14px;
-            background-color: #4ade80;
-            animation: blink 1s step-end infinite;
-            vertical-align: middle;
-            margin-left: 2px;
+        /* Typewriter Cursor */
+        .typewriter-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
         }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body class="antialiased selection:bg-muayGold selection:text-black">
@@ -175,7 +175,7 @@
             <div class="mb-6">
                 <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-800 aspect-[2/1] md:aspect-[3/1] group">
                     <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-80 z-10"></div>
-                    <img src="https://placehold.co/1200x400/111/FFF?text=ONE+Friday+Fights+139" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-700">
+                    <img src="https://placehold.co/1200x400/111/FFF?text=ONE+Lumpinee+139" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-700">
                     <div class="absolute bottom-0 left-0 p-6 z-20 w-full">
                         <div class="flex items-center gap-2 mb-3">
                             <span class="bg-muayRed text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse">ถ่ายทอดสด</span>
@@ -217,7 +217,7 @@
             </div>
         </div>
 
-        <!-- === VIEW 2: TECHNIQUES (35 Moves) === -->
+        <!-- === VIEW 2: TECHNIQUES === -->
         <div id="view-techniques" class="app-view">
             <div class="flex justify-between items-center mb-4 mt-2">
                 <h2 class="text-xl font-bold flex items-center gap-2">
@@ -298,7 +298,12 @@
                 </div>
                 <input type="file" id="profileUpload" class="hidden" accept="image/*" onchange="uploadProfileImage(this)">
                 
-                <h2 id="profileName" class="text-2xl font-bold text-white mb-1">สมชาย รักมวยไทย</h2>
+                <!-- Editable Name -->
+                <div class="flex items-center justify-center gap-2 mb-1">
+                    <h2 id="profileName" contenteditable="true" onblur="saveUserName()" class="text-2xl font-bold text-white outline-none border-b border-transparent hover:border-gray-500 transition cursor-text min-w-[100px]">สมชาย รักมวยไทย</h2>
+                    <i data-lucide="edit-2" class="w-4 h-4 text-gray-500 opacity-50"></i>
+                </div>
+
                 <div class="inline-flex items-center gap-1 px-3 py-1 bg-gray-800 rounded-full border border-gray-600 text-xs text-muayGold mb-4">
                     <i data-lucide="medal" class="w-3 h-3"></i>
                     <span id="profileRankDisplay">Nak Muay (นักมวยฝึกหัด)</span>
@@ -356,20 +361,17 @@
             <div class="w-24 h-24 rounded-full border-4 border-muayGold border-t-transparent animate-spin"></div>
             <div class="absolute inset-0 flex items-center justify-center"><i data-lucide="cpu" class="w-8 h-8 text-white animate-pulse"></i></div>
         </div>
-        <h3 id="aiStatusTitle" class="text-2xl font-bold text-white mb-6">AI กําลังทำงาน...</h3>
+        <h3 id="aiStatusTitle" class="text-2xl font-bold text-white mb-4">กำลังประมวลผล...</h3>
         
-        <!-- Prompt Box (Terminal Style) -->
-        <div class="w-full max-w-sm bg-gray-900 border border-gray-700 rounded-lg p-4 text-left shadow-2xl font-mono text-xs overflow-hidden">
-            <div class="flex items-center gap-1.5 mb-3 border-b border-gray-800 pb-2">
-                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
-                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                <span class="text-[10px] text-gray-500 ml-auto opacity-75">AI_AGENT_V1.5.EXE</span>
+        <!-- Prompt Box -->
+        <div class="w-full max-w-sm bg-gray-900 border border-gray-700 rounded-lg p-3 text-left shadow-lg">
+            <div class="flex items-center gap-2 mb-2 border-b border-gray-700 pb-2">
+                <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                <span class="text-[10px] text-gray-500 ml-auto">AI Agent Terminal</span>
             </div>
-            <div id="aiPromptContent" class="space-y-1.5 text-green-400 min-h-[100px]">
-                <!-- Lines injected by JS -->
-            </div>
-            <div class="mt-2"><span class="text-muayGold">root@onefc-ai:~$</span><span class="cursor-blink"></span></div>
+            <p id="aiPromptText" class="text-xs text-green-400 font-mono leading-relaxed typewriter-cursor"></p>
         </div>
     </div>
 
@@ -531,6 +533,8 @@
             { id: 'm13', name: "ดับชวาลา", category: "mae_mai", desc: "การชกหมัดตรงไปที่ใบหน้าเพื่อปิดตา", power: 80, diff: 40, img: "https://placehold.co/400x300/1e293b/FFF?text=Dap+Chawala" },
             { id: 'm14', name: "ขุนยักษ์จับลิง", category: "mae_mai", desc: "การป้องกันหมัด-เตะ-ศอก-เข่า พร้อมกัน", power: 85, diff: 95, img: "https://placehold.co/400x300/1e293b/FFF?text=Khun+Yak+Jub+Ling" },
             { id: 'm15', name: "หักคอเอราวัณ", category: "mae_mai", desc: "การโน้มคอคู่ต่อสู้ลงมาเพื่อตีเข่า", power: 90, diff: 65, img: "https://placehold.co/400x300/1e293b/FFF?text=Hak+Kor" },
+            
+            // Look Mai (15)
             { id: 'l1', name: "เอราวัณเสยงา", category: "luk_mai", desc: "หมัดเสยปลายคางในระยะประชิด", power: 90, diff: 50, img: "https://placehold.co/400x300/1e293b/FFF?text=Erawan+Soei" },
             { id: 'l2', name: "บาทาลูบพักตร์", category: "luk_mai", desc: "การถีบเข้าที่ใบหน้าเพื่อทำลายสมาธิ", power: 75, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Bata+Lup" },
             { id: 'l3', name: "ขุนยักษ์พานาง", category: "luk_mai", desc: "การกอดรัดและทุ่มคู่ต่อสู้", power: 85, diff: 80, img: "https://placehold.co/400x300/1e293b/FFF?text=Khun+Yak" },
@@ -546,6 +550,8 @@
             { id: 'l13', name: "สักพวงมาลัย", category: "luk_mai", desc: "การแทงเข่าตรงสู่หน้าอกแล้วตามด้วยศอก", power: 88, diff: 75, img: "https://placehold.co/400x300/1e293b/FFF?text=Sak+Phuang" },
             { id: 'l14', name: "เถรกวาดลาน", category: "luk_mai", desc: "การเตะกวาดล่างให้คู่ต่อสู้ล้มทั้งยืน", power: 85, diff: 80, img: "https://placehold.co/400x300/1e293b/FFF?text=Then+Kwad" },
             { id: 'l15', name: "ฝานลูกบวบ", category: "luk_mai", desc: "การศอกเฉียงลงที่ใบหน้า", power: 82, diff: 55, img: "https://placehold.co/400x300/1e293b/FFF?text=Fan+Luk" },
+
+            // Counters (5)
             { id: 'c1', name: "แก้หมัดด้วยศอก", category: "counter", desc: "ปัดหมัดแล้วสวนด้วยศอกทันที", power: 80, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Counter+Elbow" },
             { id: 'c2', name: "แก้เตะด้วยถีบ", category: "counter", desc: "ใช้ลูกถีบสกัดเมื่อคู่ต่อสู้เริ่มยกขาเตะ", power: 75, diff: 55, img: "https://placehold.co/400x300/1e293b/FFF?text=Counter+Teep" },
             { id: 'c3', name: "แก้เข่าด้วยศอก", category: "counter", desc: "เมื่อคู่ต่อสู้ตีเข่า ให้ปักศอกลงที่ขา", power: 85, diff: 70, img: "https://placehold.co/400x300/1e293b/FFF?text=Counter+Knee" },
@@ -743,7 +749,8 @@
         function toggleCheckIn(d) { let l = JSON.parse(localStorage.getItem(KEY_LOGS)||'[]'); if(l.includes(d)) l=l.filter(x=>x!==d); else l.push(d); localStorage.setItem(KEY_LOGS,JSON.stringify(l)); loadUserData(); }
         function checkInToday() { const n=new Date(); toggleCheckIn(`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`); }
         function uploadProfileImage(input) { if(input.files && input.files[0]) { const reader = new FileReader(); reader.onload = function(e) { document.getElementById('profileImg').src = e.target.result; localStorage.setItem(KEY_PROFILE_IMG, e.target.result); }; reader.readAsDataURL(input.files[0]); } }
-        
+        function saveUserName() { localStorage.setItem(KEY_USER, document.getElementById('profileName').innerText); }
+
         function initData() {
             const now = new Date();
             const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
@@ -758,6 +765,10 @@
                 { id: 3901, event: "ONE Fight Night 39 (คู่เอก)", red: "แรมโบ้เล็ก ฉ.อจลบุญ", blue: "อับดุลลา ดายาคาเอฟ", time: "08:00", date: "เสาร์ 24 ม.ค. 2569", channel: "YouTube ONE", ai_red: 60, ai_blue: 40, img: "https://placehold.co/600x300/222/FFF?text=OFN+39" },
                 { id: 4001, event: "ONE Fight Night 40", red: "แจ็กกี บุนตัน", blue: "สเตลลา เฮเมตซ์เบอร์เกอร์", time: "08:00", date: "เสาร์ 14 ก.พ. 2569", channel: "YouTube ONE", ai_red: 52, ai_blue: 48, img: "https://placehold.co/600x300/333/FFF?text=OFN+40" }
             ];
+
+            // Load Name
+            const savedName = localStorage.getItem(KEY_USER);
+            if(savedName) document.getElementById('profileName').innerText = savedName;
 
             const saved = localStorage.getItem(KEY_MATCHES);
             currentMatches = saved ? JSON.parse(saved) : initialMatches;
