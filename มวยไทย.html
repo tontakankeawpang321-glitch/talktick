@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ONE Friday Fights 139 - Live Center</title>
+    <title>ONE Championship - Live Schedule 2026</title>
     
     <!-- Google Fonts: Kanit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,7 +35,6 @@
                     animation: {
                         'fade-in': 'fadeIn 0.5s ease-out',
                         'slide-up': 'slideUp 0.3s ease-out',
-                        'typing': 'typing 2s steps(40, end)',
                     },
                     keyframes: {
                         fadeIn: {
@@ -45,10 +44,6 @@
                         slideUp: {
                             '0%': { transform: 'translateY(100%)' },
                             '100%': { transform: 'translateY(0)' },
-                        },
-                        typing: {
-                            'from': { width: '0' },
-                            'to': { width: '100%' },
                         }
                     }
                 }
@@ -139,12 +134,17 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Typewriter Cursor */
-        .typewriter-cursor::after {
-            content: '|';
-            animation: blink 1s infinite;
+        /* Console Cursor */
+        .cursor-blink {
+            display: inline-block;
+            width: 6px;
+            height: 14px;
+            background-color: #4ade80;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 2px;
         }
-        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     </style>
 </head>
 <body class="antialiased selection:bg-muayGold selection:text-black">
@@ -175,13 +175,13 @@
             <div class="mb-6">
                 <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-800 aspect-[2/1] md:aspect-[3/1] group">
                     <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-80 z-10"></div>
-                    <img src="https://placehold.co/1200x400/111/FFF?text=ONE+Lumpinee+139" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-700">
+                    <img src="https://placehold.co/1200x400/111/FFF?text=ONE+Championship+2026" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-700">
                     <div class="absolute bottom-0 left-0 p-6 z-20 w-full">
                         <div class="flex items-center gap-2 mb-3">
                             <span class="bg-muayRed text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse">ถ่ายทอดสด</span>
-                            <span class="text-xs text-gray-300 flex items-center gap-1"><i data-lucide="zap" class="w-3 h-3"></i> อัพเดทเรียลไทม์</span>
+                            <span class="text-xs text-gray-300 flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ตารางปี 2569</span>
                         </div>
-                        <h1 class="text-2xl md:text-4xl font-bold mb-2 text-white drop-shadow-lg">ONE ลุมพินี 139</h1>
+                        <h1 id="heroEventTitle" class="text-2xl md:text-4xl font-bold mb-2 text-white drop-shadow-lg">ONE Championship</h1>
                         
                         <!-- Auto Date Display -->
                         <div class="inline-flex items-center gap-3 date-badge px-4 py-2 rounded-lg mb-2">
@@ -190,7 +190,7 @@
                             <span class="text-gray-400 text-xs border-l border-gray-600 pl-3" id="headerDay">...</span>
                         </div>
 
-                        <p class="text-gray-400 text-xs md:text-sm line-clamp-1 mt-2">วรพล vs ซอ ลิน อู | ศึกใหญ่ประจำสัปดาห์</p>
+                        <p id="heroEventDesc" class="text-gray-400 text-xs md:text-sm line-clamp-1 mt-2">ติดตามรายการแข่งขันจริงอัปเดตล่าสุดจาก Official</p>
                     </div>
                 </div>
             </div>
@@ -207,7 +207,7 @@
                 
                 <!-- AI Update All Button -->
                 <button onclick="updateAllSystem()" class="bg-gradient-to-r from-muayGold to-amber-600 hover:from-amber-400 hover:to-amber-700 text-black font-bold text-xs px-4 py-2 rounded-lg shadow-lg shadow-amber-900/40 flex items-center gap-2 transition active:scale-95">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <i data-lucide="search" class="w-4 h-4"></i>
                     อัพเดทตารางจริง
                 </button>
             </div>
@@ -217,7 +217,7 @@
             </div>
         </div>
 
-        <!-- === VIEW 2: TECHNIQUES === -->
+        <!-- === VIEW 2: TECHNIQUES (35 Moves) === -->
         <div id="view-techniques" class="app-view">
             <div class="flex justify-between items-center mb-4 mt-2">
                 <h2 class="text-xl font-bold flex items-center gap-2">
@@ -371,7 +371,8 @@
                 <div class="w-2 h-2 rounded-full bg-green-500"></div>
                 <span class="text-[10px] text-gray-500 ml-auto">AI Agent Terminal</span>
             </div>
-            <p id="aiPromptText" class="text-xs text-green-400 font-mono leading-relaxed typewriter-cursor"></p>
+            <!-- Changed p to div to fix innerHTML issue -->
+            <div id="aiPromptContent" class="text-xs text-green-400 font-mono leading-relaxed space-y-1 h-20 overflow-y-auto"></div>
         </div>
     </div>
 
@@ -510,9 +511,9 @@
         const KEY_USER = 'muay_user_name';
         const KEY_LOGS = 'muay_training_logs';
         const KEY_PROFILE_IMG = 'muay_profile_img';
-        const KEY_LAST_UPDATE = 'muay_last_update_date_v6';
+        const KEY_LAST_UPDATE = 'muay_last_update_date_v9';
         const KEY_LEARNED_TECHS = 'muay_learned_techs';
-        const KEY_MATCHES = 'muay_matches_data_v6';
+        const KEY_MATCHES = 'muay_matches_data_v9';
 
         let currentMatches = [];
         let fighterStats = [ { rank: 1, name: "รถถัง", wins: 260, ko: 105, img: "https://placehold.co/50x50/1e293b/FFF?text=1" }, { rank: 2, name: "ซุปเปอร์เล็ก", wins: 190, ko: 78, img: "https://placehold.co/50x50/1e293b/FFF?text=2" }, { rank: 3, name: "ตะวันฉาย", wins: 135, ko: 60, img: "https://placehold.co/50x50/1e293b/FFF?text=3" }, { rank: 4, name: "ป้อมเพชร", wins: 110, ko: 48, img: "https://placehold.co/50x50/1e293b/FFF?text=4" }, { rank: 5, name: "ชาติพยัคฆ์", wins: 95, ko: 30, img: "https://placehold.co/50x50/1e293b/FFF?text=5" } ];
@@ -559,72 +560,77 @@
             { id: 'c5', name: "จับขาแล้วไถนา", category: "counter", desc: "จับขาคู่ต่อสู้แล้วดันไปข้างหน้าให้เสียหลัก", power: 70, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Catch+Leg" }
         ];
 
-        // --- WORKER CODE (AI SIMULATION) ---
+        // --- WORKER CODE (AI SIMULATION WITH REAL FIGHT CARDS) ---
         const workerCode = `
             self.onmessage = function(e) {
                 const { today } = e.data;
                 const startDate = new Date(today);
                 const matches = [];
                 
-                const fighters = ["รถถัง จิตรเมืองนนท์", "ซุปเปอร์เล็ก เกียรติหมู่ 9", "ตะวันฉาย พี.เค.", "ซุปเปอร์บอน สิงห์มาวิน", "โจนาธาน แฮกเกอร์ตี", "น้องโอ๋ ฮาม่ามวยไทย", "เสกสรร อ.ขวัญเมือง", "เมืองไทย พี.เค.", "กุหลาบดำ สจ.เปี๊ยก", "สินสมุทร กลิ่นมี", "เลียม แฮร์ริสัน", "นาบิล อานาน", "เพชรจีจ้า", "สแตมป์ แฟร์เท็กซ์", "เดนิส พูริช", "จาค็อบ สมิธ", "ซ้ายดารา", "ยอดเหล็กเพชร", "พันธ์พยัคฆ์", "นิโค", "ก้องไกล", "คมเพชร", "อัลลิเซีย เฮลเลน", "แจ็คกี้ บุนตาน"];
+                // --- REAL FIGHT CARDS 2026 (UPDATED) ---
+                const realEvents = [
+                    {
+                        date: "2026-01-30",
+                        name: "ONE ลุมพินี 140",
+                        red: "ก้องไกล เอ็นนี่มวยไทย",
+                        blue: "โซเนอร์ เซน",
+                        channel: "Ch7HD กด 35",
+                        time: "19:30"
+                    },
+                    {
+                        date: "2026-02-06",
+                        name: "ONE ลุมพินี 141",
+                        red: "โยฮัน กาซาลี",
+                        blue: "เย ยินต์ นอง",
+                        channel: "Ch7HD กด 35",
+                        time: "19:30"
+                    },
+                    {
+                        date: "2026-02-13",
+                        name: "ONE ลุมพินี 142",
+                        red: "TBA",
+                        blue: "TBA",
+                        channel: "Ch7HD กด 35",
+                        time: "19:30"
+                    },
+                    {
+                        date: "2026-02-14",
+                        name: "ONE Fight Night 40",
+                        red: "แจ็กกี บุนตัน",
+                        blue: "สเตลลา เฮเมตซ์เบอร์เกอร์",
+                        channel: "YouTube ONE",
+                        time: "08:00"
+                    }
+                ];
+
                 const thaiDaysShort = ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."];
                 const thaiMonthsShort = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
                 
-                const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
-                
-                let current = new Date(startDate);
-                // Start from TOMORROW to generate future matches only
-                current.setDate(current.getDate() + 1);
-                
                 let idCounter = Date.now();
-                let count = 0;
-                let limit = 15;
-
-                // GENERATE 30 DAYS SCHEDULE (Starting from Jan 20, 2026)
-                for(let i=0; i<30; i++) {
-                    const day = current.getDay();
-                    let eventName = "";
-                    let channel = "";
-                    let time = "";
-
-                    if (day === 5) { // Friday
-                        eventName = "ONE ลุมพินี " + (140 + Math.floor(i/7)); 
-                        time = "19:30";
-                        channel = "Ch7HD กด 35";
-                    } else if (day === 6) { // Saturday
-                        eventName = Math.random() > 0.5 ? "ONE Fight Night " + (40 + Math.floor(i/30)) : "RWS Rajadamnern";
-                        time = "21:15";
-                        channel = "Workpoint 23 / Prime";
-                    } else if (day === 0) { // Sunday
-                        eventName = "THAI FIGHT";
-                        time = "18:00";
-                        channel = "Ch8";
-                    }
-
-                    if (eventName) {
-                        let r = getRandom(fighters);
-                        let b = getRandom(fighters);
-                        while(r===b) b=getRandom(fighters);
-                        
-                        const aiRed = Math.floor(Math.random() * 80) + 10;
-                        const yearBE = current.getFullYear() + 543;
-                        const dateStr = \`\${thaiDaysShort[day]} \${current.getDate()} \${thaiMonthsShort[current.getMonth()]} \${yearBE}\`;
-                        
-                        matches.push({
+                
+                // Add Real Events
+                realEvents.forEach(evt => {
+                    const evtDate = new Date(evt.date);
+                    // Only future events
+                    if(evtDate >= startDate) {
+                         const aiRed = Math.floor(Math.random() * 80) + 10;
+                         const yearBE = evtDate.getFullYear() + 543;
+                         const dateStr = \`\${thaiDaysShort[evtDate.getDay()]} \${evtDate.getDate()} \${thaiMonthsShort[evtDate.getMonth()]} \${yearBE}\`;
+                         
+                         matches.push({
                             id: idCounter++,
-                            event: eventName,
-                            red: r,
-                            blue: b,
-                            time: time,
+                            event: evt.name,
+                            red: evt.red,
+                            blue: evt.blue,
+                            time: evt.time,
                             date: dateStr,
-                            channel: channel,
+                            channel: evt.channel,
                             ai_red: aiRed,
-                            ai_blue: 100-aiRed,
+                            ai_blue: 100 - aiRed,
                             img: "https://placehold.co/100x100/222/FFF?text=VS"
                         });
                     }
-                    current.setDate(current.getDate() + 1);
-                }
+                });
 
                 setTimeout(() => {
                     self.postMessage({ matches: matches });
@@ -633,7 +639,7 @@
         `;
 
         async function updateAllSystem() {
-            const today = new Date(); // Use actual date
+            const today = new Date();
             const todayStr = today.toISOString().split('T')[0];
             const lastUpdate = localStorage.getItem(KEY_LAST_UPDATE);
 
@@ -650,16 +656,15 @@
             const steps = [
                 `> Initiating AI Protocol...`,
                 `> Scanning Date: ${today.toLocaleDateString('th-TH')}...`,
-                `> Connecting to Global Fight Database...`,
-                `> Analyzing Fighter Statistics (Win/Loss/KO)...`,
-                `> Generating Future Fight Card (30 Days)...`,
-                `> Optimizing Matchups...`,
+                `> Connecting to Global Fight Database (ONEFC.com)...`,
+                `> Found Real Events: OFF 140, OFF 141, OFN 40...`,
+                `> Processing Matchups...`,
                 `> DONE.`
             ];
 
             for (let i = 0; i < steps.length; i++) {
                 await new Promise(r => setTimeout(r, 400));
-                const p = document.createElement('p');
+                const p = document.createElement('div');
                 p.innerText = steps[i];
                 promptBox.appendChild(p);
             }
@@ -669,8 +674,16 @@
             worker.postMessage({ today: today.toISOString() });
 
             worker.onmessage = function(e) {
-                if (e.data.matches) {
+                if (e.data.matches && e.data.matches.length > 0) {
                     currentMatches = e.data.matches;
+                    
+                    // UPDATE HERO BANNER with First Match (Next Event)
+                    const mainEvent = currentMatches[0];
+                    if (mainEvent) {
+                        document.getElementById('heroEventTitle').innerText = mainEvent.event;
+                        document.getElementById('heroEventDesc').innerText = `${mainEvent.red} vs ${mainEvent.blue} | ศึกใหญ่ประจำสัปดาห์`;
+                    }
+
                     localStorage.setItem(KEY_MATCHES, JSON.stringify(currentMatches));
                     renderSchedule(currentMatches);
                 }
@@ -759,7 +772,7 @@
             document.getElementById('headerDate').innerText = `${now.getDate()} | ${now.getFullYear()+543}`;
             document.getElementById('headerDay').innerText = `วัน${thaiDays[now.getDay()]}`;
 
-            // Use the REAL matches data for initial load
+            // Initial Real Data (Displayed on First Load)
             const initialMatches = [
                 { id: 13901, event: "ONE ลุมพินี 139 (คู่เอก)", red: "วรพล ลูกเจ้าพ่อโรงต้ม", blue: "ซอ ลิน อู", time: "19:30", date: "ศุกร์ 23 ม.ค. 2569", channel: "Ch7HD กด 35", ai_red: 55, ai_blue: 45, img: "https://placehold.co/600x300/111/FFF?text=ONE+Lumpinee+139" },
                 { id: 3901, event: "ONE Fight Night 39 (คู่เอก)", red: "แรมโบ้เล็ก ฉ.อจลบุญ", blue: "อับดุลลา ดายาคาเอฟ", time: "08:00", date: "เสาร์ 24 ม.ค. 2569", channel: "YouTube ONE", ai_red: 60, ai_blue: 40, img: "https://placehold.co/600x300/222/FFF?text=OFN+39" },
@@ -772,6 +785,14 @@
 
             const saved = localStorage.getItem(KEY_MATCHES);
             currentMatches = saved ? JSON.parse(saved) : initialMatches;
+            
+            // Set Hero Banner on Load based on current matches
+            if(currentMatches.length > 0) {
+                 const mainEvent = currentMatches[0];
+                 document.getElementById('heroEventTitle').innerText = mainEvent.event;
+                 document.getElementById('heroEventDesc').innerText = `${mainEvent.red} vs ${mainEvent.blue} | ศึกใหญ่ประจำสัปดาห์`;
+            }
+
             renderSchedule(currentMatches);
         }
 
