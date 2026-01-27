@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ONE Championship - Live Schedule 2026</title>
+    <title>ONE Championship - Live Center</title>
     
     <!-- Google Fonts: Kanit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -145,6 +145,11 @@
             margin-left: 2px;
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Typewriter Effect for Modal */
+        .typewriter-text {
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-muayGold selection:text-black">
@@ -169,19 +174,19 @@
     <!-- Main Content Wrapper -->
     <div class="pt-20 md:pt-24 pb-4 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <!-- === VIEW 1: HOME (Schedule) === -->
+        <!-- === VIEW 1: HOME (Schedule via Iframe) === -->
         <div id="view-home" class="app-view active">
             <!-- Hero Banner -->
             <div class="mb-6">
                 <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-800 aspect-[2/1] md:aspect-[3/1] group">
                     <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-80 z-10"></div>
-                    <img src="https://placehold.co/1200x400/111/FFF?text=ONE+Championship+2026" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-700">
+                    <img src="https://placehold.co/1200x400/111/FFF?text=ONE+Championship+Official" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition duration-700">
                     <div class="absolute bottom-0 left-0 p-6 z-20 w-full">
                         <div class="flex items-center gap-2 mb-3">
-                            <span class="bg-muayRed text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse">ถ่ายทอดสด</span>
-                            <span class="text-xs text-gray-300 flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ตารางปี 2569</span>
+                            <span class="bg-muayRed text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse">เว็บไซต์หลัก</span>
+                            <span class="text-xs text-gray-300 flex items-center gap-1"><i data-lucide="globe" class="w-3 h-3"></i> ONEFC.com</span>
                         </div>
-                        <h1 id="heroEventTitle" class="text-2xl md:text-4xl font-bold mb-2 text-white drop-shadow-lg">ONE Championship</h1>
+                        <h1 class="text-2xl md:text-4xl font-bold mb-2 text-white drop-shadow-lg">ตารางการแข่งขัน</h1>
                         
                         <!-- Auto Date Display -->
                         <div class="inline-flex items-center gap-3 date-badge px-4 py-2 rounded-lg mb-2">
@@ -190,34 +195,23 @@
                             <span class="text-gray-400 text-xs border-l border-gray-600 pl-3" id="headerDay">...</span>
                         </div>
 
-                        <p id="heroEventDesc" class="text-gray-400 text-xs md:text-sm line-clamp-1 mt-2">ติดตามรายการแข่งขันจริงอัปเดตล่าสุดจาก Official</p>
+                        <p class="text-gray-400 text-xs md:text-sm line-clamp-1 mt-2">ติดตามรายการแข่งขันอย่างเป็นทางการจาก ONE Championship</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Header + AI Update Button -->
-            <div class="flex justify-between items-center mb-4 bg-gray-800/50 p-3 rounded-xl border border-gray-700/50">
-                <div>
-                    <h2 class="text-lg font-bold flex items-center gap-2 text-white">
-                        <span class="w-1 h-5 bg-muayGold rounded-full"></span>
-                        รายการแข่งขัน
-                    </h2>
-                    <span class="text-[10px] text-gray-400">อัปเดตล่าสุด: <span id="lastUpdate" class="text-gray-300">เมื่อสักครู่</span></span>
-                </div>
-                
-                <!-- AI Update All Button -->
-                <button onclick="updateAllSystem()" class="bg-gradient-to-r from-muayGold to-amber-600 hover:from-amber-400 hover:to-amber-700 text-black font-bold text-xs px-4 py-2 rounded-lg shadow-lg shadow-amber-900/40 flex items-center gap-2 transition active:scale-95">
-                    <i data-lucide="search" class="w-4 h-4"></i>
-                    อัพเดทตารางจริง
-                </button>
-            </div>
-            
-            <div class="space-y-4 min-h-[200px]" id="scheduleContainer">
-                <!-- Data injected via JS -->
+            <!-- Iframe Container for ONEFC Events -->
+            <div class="w-full h-[800px] bg-white rounded-xl overflow-hidden shadow-xl border border-gray-700 relative">
+                 <div class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 z-0 text-center p-6">
+                    <i data-lucide="loader-2" class="w-10 h-10 text-muayGold animate-spin mb-4"></i>
+                    <p class="text-gray-400 mb-2">กำลังโหลดหน้าเว็บไซต์...</p>
+                    <a href="https://www.onefc.com/th/events/" target="_blank" class="text-xs text-muayBlue underline">หากไม่แสดงผล คลิกที่นี่</a>
+                 </div>
+                 <iframe src="https://www.onefc.com/th/events/" class="w-full h-full relative z-10 bg-white" frameborder="0" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
             </div>
         </div>
 
-        <!-- === VIEW 2: TECHNIQUES (35 Moves) === -->
+        <!-- === VIEW 2: TECHNIQUES === -->
         <div id="view-techniques" class="app-view">
             <div class="flex justify-between items-center mb-4 mt-2">
                 <h2 class="text-xl font-bold flex items-center gap-2">
@@ -355,28 +349,7 @@
         </div>
     </div>
 
-    <!-- AI Loading Overlay with PROMPT Animation -->
-    <div id="aiOverlay" class="fixed inset-0 z-[70] hidden flex flex-col items-center justify-center bg-black/90 text-center px-6 transition-opacity duration-300 backdrop-blur-sm">
-        <div class="relative mb-6">
-            <div class="w-24 h-24 rounded-full border-4 border-muayGold border-t-transparent animate-spin"></div>
-            <div class="absolute inset-0 flex items-center justify-center"><i data-lucide="cpu" class="w-8 h-8 text-white animate-pulse"></i></div>
-        </div>
-        <h3 id="aiStatusTitle" class="text-2xl font-bold text-white mb-4">กำลังประมวลผล...</h3>
-        
-        <!-- Prompt Box -->
-        <div class="w-full max-w-sm bg-gray-900 border border-gray-700 rounded-lg p-3 text-left shadow-lg">
-            <div class="flex items-center gap-2 mb-2 border-b border-gray-700 pb-2">
-                <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
-                <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                <span class="text-[10px] text-gray-500 ml-auto">AI Agent Terminal</span>
-            </div>
-            <!-- Changed p to div to fix innerHTML issue -->
-            <div id="aiPromptContent" class="text-xs text-green-400 font-mono leading-relaxed space-y-1 h-20 overflow-y-auto"></div>
-        </div>
-    </div>
-
-    <!-- Modal -->
+    <!-- Modal (Techniques Analysis) -->
     <div id="infoModal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-black/90 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
         <div class="fixed inset-0 z-10 overflow-y-auto">
@@ -394,14 +367,22 @@
                         </div>
                     </div>
                     <div class="p-6">
+                        <!-- AI Analysis Section -->
                         <div class="bg-gray-800/50 p-4 rounded-xl mb-4 border border-gray-700/50">
-                            <h4 class="text-muayGold font-bold text-sm mb-2 flex items-center gap-2"><i data-lucide="book-open" class="w-4 h-4"></i> คำอธิบาย</h4>
-                            <p id="modalDesc" class="text-gray-300 text-sm leading-relaxed font-body">Description...</p>
+                            <div id="aiLoading" class="hidden text-center py-4">
+                                <i data-lucide="loader-2" class="w-8 h-8 text-muayGold animate-spin mx-auto mb-2"></i>
+                                <span class="text-xs text-muayGold">AI กำลังวิเคราะห์ท่ามวย...</span>
+                            </div>
+                            <div id="aiContent" class="text-left">
+                                <h4 class="text-muayGold font-bold text-sm mb-2 flex items-center gap-2">
+                                    <i data-lucide="bot" class="w-4 h-4"></i> คำอธิบายโดย AI
+                                </h4>
+                                <div id="modalDesc" class="text-gray-300 text-sm leading-relaxed font-body typewriter-text min-h-[60px]"></div>
+                            </div>
                         </div>
-                        <button onclick="playDemoVideo()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl mb-6 shadow-lg shadow-red-900/30 flex items-center justify-center gap-2 transition active:scale-95">
-                            <i data-lucide="play-circle" class="w-5 h-5"></i> ดูวิดีโอสาธิต (Demo)
-                        </button>
-                        <div class="space-y-4">
+
+                        <!-- Stats -->
+                        <div class="space-y-4 mt-4">
                             <div>
                                 <div class="flex justify-between text-xs mb-1.5 text-gray-400"><span>พลังทำลาย (Power)</span><span id="statPower" class="font-mono text-muayRed">0%</span></div>
                                 <div class="w-full bg-gray-700 rounded-full h-1.5"><div id="barPower" class="bg-muayRed h-1.5 rounded-full shadow-[0_0_8px_rgba(220,38,38,0.5)]" style="width: 0%"></div></div>
@@ -411,74 +392,6 @@
                                 <div class="w-full bg-gray-700 rounded-full h-1.5"><div id="barDiff" class="bg-muayBlue h-1.5 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.5)]" style="width: 0%"></div></div>
                             </div>
                         </div>
-                        <div class="mt-6 flex items-center justify-center gap-2 text-green-400 bg-green-900/20 p-2 rounded-lg border border-green-900/50 text-xs">
-                            <i data-lucide="check-circle" class="w-4 h-4"></i>
-                            <span>บันทึกการเรียนรู้เรียบร้อยแล้ว</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Match Detail Modal -->
-    <div id="matchModal" class="fixed inset-0 z-[65] hidden" aria-labelledby="match-modal-title" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 bg-black/95 backdrop-blur-sm transition-opacity" onclick="closeMatchModal()"></div>
-        <div class="fixed inset-0 z-10 overflow-y-auto">
-            <div class="flex min-h-full items-center justify-center p-4 text-center">
-                <div class="relative transform overflow-hidden bg-gray-900 text-left shadow-2xl transition-all sm:w-full sm:max-w-lg rounded-2xl border border-gray-700 w-full">
-                    <button onclick="closeMatchModal()" class="absolute right-4 top-4 text-white bg-black/50 rounded-full p-2 z-20 hover:bg-black/80">
-                        <i data-lucide="x" class="w-5 h-5"></i>
-                    </button>
-                    <div class="relative h-48 bg-black">
-                        <img id="matchModalImg" src="" class="w-full h-full object-cover opacity-60">
-                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
-                        <div class="absolute bottom-4 left-0 right-0 text-center">
-                            <span id="matchModalEvent" class="bg-muayRed text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">EVENT NAME</span>
-                        </div>
-                    </div>
-                    <div class="p-6 pt-4">
-                        <div class="flex justify-between items-end mb-6">
-                            <div class="text-center w-1/2">
-                                <h3 id="matchRedName" class="text-lg font-bold text-muayRed break-words">RED</h3>
-                                <p class="text-xs text-gray-500">มุมแดง</p>
-                            </div>
-                            <div class="text-center w-10 text-xl font-bold text-gray-600 mb-2">VS</div>
-                            <div class="text-center w-1/2">
-                                <h3 id="matchBlueName" class="text-lg font-bold text-muayBlue break-words">BLUE</h3>
-                                <p class="text-xs text-gray-500">มุมน้ำเงิน</p>
-                            </div>
-                        </div>
-                        <div class="mb-6">
-                            <div class="flex justify-between text-xs font-bold mb-1">
-                                <span class="text-muayRed">Win Chance</span>
-                                <span class="text-muayBlue">Win Chance</span>
-                            </div>
-                            <div class="relative h-6 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
-                                <div id="matchBarRed" class="absolute left-0 top-0 h-full bg-muayRed flex items-center justify-start pl-3 text-xs text-white font-bold transition-all duration-1000" style="width: 50%">50%</div>
-                                <div id="matchBarBlue" class="absolute right-0 top-0 h-full bg-muayBlue flex items-center justify-end pr-3 text-xs text-white font-bold transition-all duration-1000" style="width: 50%">50%</div>
-                            </div>
-                            <p class="text-[10px] text-center text-gray-500 mt-2 flex items-center justify-center gap-1">
-                                <i data-lucide="cpu" class="w-3 h-3"></i> วิเคราะห์โดย AI อิงจากสถิติที่ผ่านมา
-                            </p>
-                        </div>
-                        <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 space-y-3 mb-4">
-                            <div class="flex justify-between text-sm items-center">
-                                <span class="text-gray-400 flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4"></i> วันที่</span>
-                                <span class="text-white font-medium" id="matchDetailDate">-</span>
-                            </div>
-                            <div class="flex justify-between text-sm items-center">
-                                <span class="text-gray-400 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4"></i> เวลา</span>
-                                <span class="text-white font-medium" id="matchDetailTime">-</span>
-                            </div>
-                            <div class="flex justify-between text-sm items-center">
-                                <span class="text-gray-400 flex items-center gap-2"><i data-lucide="tv" class="w-4 h-4"></i> ช่องทาง</span>
-                                <span class="text-muayGold font-bold" id="matchDetailChannel">-</span>
-                            </div>
-                        </div>
-                        <button onclick="closeMatchModal()" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-xl transition">
-                            ปิดหน้าต่าง
-                        </button>
                     </div>
                 </div>
             </div>
@@ -511,14 +424,12 @@
         const KEY_USER = 'muay_user_name';
         const KEY_LOGS = 'muay_training_logs';
         const KEY_PROFILE_IMG = 'muay_profile_img';
-        const KEY_LAST_UPDATE = 'muay_last_update_date_v9';
         const KEY_LEARNED_TECHS = 'muay_learned_techs';
-        const KEY_MATCHES = 'muay_matches_data_v9';
+        const KEY_TECH_ANALYSIS = 'muay_tech_analysis_data'; // Save analysis text
 
-        let currentMatches = [];
         let fighterStats = [ { rank: 1, name: "รถถัง", wins: 260, ko: 105, img: "https://placehold.co/50x50/1e293b/FFF?text=1" }, { rank: 2, name: "ซุปเปอร์เล็ก", wins: 190, ko: 78, img: "https://placehold.co/50x50/1e293b/FFF?text=2" }, { rank: 3, name: "ตะวันฉาย", wins: 135, ko: 60, img: "https://placehold.co/50x50/1e293b/FFF?text=3" }, { rank: 4, name: "ป้อมเพชร", wins: 110, ko: 48, img: "https://placehold.co/50x50/1e293b/FFF?text=4" }, { rank: 5, name: "ชาติพยัคฆ์", wins: 95, ko: 30, img: "https://placehold.co/50x50/1e293b/FFF?text=5" } ];
         let techniquesData = [
-            // 35 items as before...
+            // 35 items
             { id: 'm1', name: "สลับฟันปลา", category: "mae_mai", desc: "การหลบหลีกอาวุธคู่ต่อสู้และเข้าวงในเพื่อโจมตี", power: 75, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Salab+Fan+Pla" },
             { id: 'm2', name: "ปักษาแหวกรัง", category: "mae_mai", desc: "การปัดป้องและแหวกการ์ดเพื่อเข้าทำลายจังหวะ", power: 70, diff: 65, img: "https://placehold.co/400x300/1e293b/FFF?text=Paksa" },
             { id: 'm3', name: "ชวาซัดหอก", category: "mae_mai", desc: "การศอกคู่ใส่ลำตัวคู่ต่อสู้ เพื่อหยุดการบุก", power: 85, diff: 70, img: "https://placehold.co/400x300/1e293b/FFF?text=Chawa" },
@@ -560,147 +471,15 @@
             { id: 'c5', name: "จับขาแล้วไถนา", category: "counter", desc: "จับขาคู่ต่อสู้แล้วดันไปข้างหน้าให้เสียหลัก", power: 70, diff: 60, img: "https://placehold.co/400x300/1e293b/FFF?text=Catch+Leg" }
         ];
 
-        // --- WORKER CODE (AI SIMULATION WITH REAL FIGHT CARDS) ---
-        const workerCode = `
-            self.onmessage = function(e) {
-                const { today } = e.data;
-                const startDate = new Date(today);
-                const matches = [];
-                
-                // --- REAL FIGHT CARDS 2026 (UPDATED) ---
-                const realEvents = [
-                    {
-                        date: "2026-01-30",
-                        name: "ONE ลุมพินี 140",
-                        red: "ก้องไกล เอ็นนี่มวยไทย",
-                        blue: "โซเนอร์ เซน",
-                        channel: "Ch7HD กด 35",
-                        time: "19:30"
-                    },
-                    {
-                        date: "2026-02-06",
-                        name: "ONE ลุมพินี 141",
-                        red: "โยฮัน กาซาลี",
-                        blue: "เย ยินต์ นอง",
-                        channel: "Ch7HD กด 35",
-                        time: "19:30"
-                    },
-                    {
-                        date: "2026-02-13",
-                        name: "ONE ลุมพินี 142",
-                        red: "TBA",
-                        blue: "TBA",
-                        channel: "Ch7HD กด 35",
-                        time: "19:30"
-                    },
-                    {
-                        date: "2026-02-14",
-                        name: "ONE Fight Night 40",
-                        red: "แจ็กกี บุนตัน",
-                        blue: "สเตลลา เฮเมตซ์เบอร์เกอร์",
-                        channel: "YouTube ONE",
-                        time: "08:00"
-                    }
-                ];
-
-                const thaiDaysShort = ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."];
-                const thaiMonthsShort = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-                
-                let idCounter = Date.now();
-                
-                // Add Real Events
-                realEvents.forEach(evt => {
-                    const evtDate = new Date(evt.date);
-                    // Only future events
-                    if(evtDate >= startDate) {
-                         const aiRed = Math.floor(Math.random() * 80) + 10;
-                         const yearBE = evtDate.getFullYear() + 543;
-                         const dateStr = \`\${thaiDaysShort[evtDate.getDay()]} \${evtDate.getDate()} \${thaiMonthsShort[evtDate.getMonth()]} \${yearBE}\`;
-                         
-                         matches.push({
-                            id: idCounter++,
-                            event: evt.name,
-                            red: evt.red,
-                            blue: evt.blue,
-                            time: evt.time,
-                            date: dateStr,
-                            channel: evt.channel,
-                            ai_red: aiRed,
-                            ai_blue: 100 - aiRed,
-                            img: "https://placehold.co/100x100/222/FFF?text=VS"
-                        });
-                    }
-                });
-
-                setTimeout(() => {
-                    self.postMessage({ matches: matches });
-                }, 3000);
-            };
-        `;
-
-        async function updateAllSystem() {
-            const today = new Date();
-            const todayStr = today.toISOString().split('T')[0];
-            const lastUpdate = localStorage.getItem(KEY_LAST_UPDATE);
-
-            if (lastUpdate === todayStr) {
-                alert("⚠️ คุณได้อัพเดทข้อมูลประจำวันไปแล้ว");
-                return;
-            }
-
-            const overlay = document.getElementById('aiOverlay');
-            const promptBox = document.getElementById('aiPromptContent');
-            overlay.classList.remove('hidden');
-            promptBox.innerHTML = '';
-            
-            const steps = [
-                `> Initiating AI Protocol...`,
-                `> Scanning Date: ${today.toLocaleDateString('th-TH')}...`,
-                `> Connecting to Global Fight Database (ONEFC.com)...`,
-                `> Found Real Events: OFF 140, OFF 141, OFN 40...`,
-                `> Processing Matchups...`,
-                `> DONE.`
-            ];
-
-            for (let i = 0; i < steps.length; i++) {
-                await new Promise(r => setTimeout(r, 400));
-                const p = document.createElement('div');
-                p.innerText = steps[i];
-                promptBox.appendChild(p);
-            }
-
-            const blob = new Blob([workerCode], { type: "application/javascript" });
-            const worker = new Worker(URL.createObjectURL(blob));
-            worker.postMessage({ today: today.toISOString() });
-
-            worker.onmessage = function(e) {
-                if (e.data.matches && e.data.matches.length > 0) {
-                    currentMatches = e.data.matches;
-                    
-                    // UPDATE HERO BANNER with First Match (Next Event)
-                    const mainEvent = currentMatches[0];
-                    if (mainEvent) {
-                        document.getElementById('heroEventTitle').innerText = mainEvent.event;
-                        document.getElementById('heroEventDesc').innerText = `${mainEvent.red} vs ${mainEvent.blue} | ศึกใหญ่ประจำสัปดาห์`;
-                    }
-
-                    localStorage.setItem(KEY_MATCHES, JSON.stringify(currentMatches));
-                    renderSchedule(currentMatches);
-                }
-                
-                const now = new Date();
-                document.getElementById('lastUpdate').innerText = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-                localStorage.setItem(KEY_LAST_UPDATE, todayStr);
-                
-                overlay.classList.add('hidden');
-                worker.terminate();
-            };
-        }
-
         // --- FUNCTIONS ---
         function clearLocalData() {
-            if(confirm('ล้างข้อมูลทั้งหมด?')) { localStorage.clear(); location.reload(); }
+            if(confirm('ยืนยันการล้างข้อมูลทั้งหมดในเครื่อง?\n(ประวัติการใช้งานและข้อมูลส่วนตัวจะหายไป)')) {
+                localStorage.clear();
+                alert('ล้างข้อมูลเรียบร้อย');
+                location.reload();
+            }
         }
+
         function switchTab(tabName) {
             document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
             document.getElementById('view-' + tabName).classList.add('active');
@@ -710,33 +489,115 @@
             window.scrollTo(0, 0);
             if(tabName === 'profile') loadUserData();
         }
-        function renderSchedule(data) {
-            const container = document.getElementById('scheduleContainer');
-            container.innerHTML = '';
-            if(!data || data.length===0) { container.innerHTML='<div class="text-center text-gray-500 py-10">ไม่พบรายการแข่งขัน</div>'; return; }
-            data.forEach(f => {
-                container.innerHTML += `<div onclick="openMatchModal(${f.id})" class="bg-gray-800 rounded-2xl p-4 flex gap-4 items-center border border-gray-700/50 shadow-sm active:scale-[0.98] transition animate-fade-in cursor-pointer hover:border-muayGold"><img src="${f.img}" class="w-16 h-16 rounded-full object-cover border-2 border-gray-600"><div class="flex-1 min-w-0"><div class="flex justify-between items-start mb-1"><h3 class="font-bold text-white truncate text-base">${f.red} พบ ${f.blue}</h3><span class="bg-blue-900/30 text-blue-400 text-[10px] px-1.5 py-0.5 rounded border border-blue-900/50">Coming Soon</span></div><div class="text-xs text-gray-400 mb-2 flex flex-col gap-1"><span class="font-bold text-white">${f.event}</span><span class="flex items-center gap-1 text-muayGold"><i data-lucide="calendar" class="w-3 h-3"></i> ${f.date}</span><span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${f.time} • ${f.channel}</span></div></div></div>`;
-            });
-            lucide.createIcons();
-        }
-        
+
         function renderLeaderboard() { const list = document.getElementById('leaderboardList'); list.innerHTML = fighterStats.map(f => `<div class="px-4 py-3 flex items-center justify-between hover:bg-gray-700/30 transition"><div class="flex items-center gap-3"><span class="text-gray-500 font-mono w-4 text-center">${f.rank}</span><span class="text-sm font-bold text-white">${f.name}</span></div><div class="text-xs text-right text-gray-400">${f.wins} ชนะ</div></div>`).join(''); }
-        function renderTechniques() {
+
+        function renderTechniques(filter = 'all', searchQuery = '') {
             const container = document.getElementById('techniquesGrid'); container.innerHTML = '';
             const learnedIds = JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS) || '[]');
             document.getElementById('techProgressBadge').innerText = `${learnedIds.length}/${techniquesData.length}`;
-            techniquesData.forEach(t => {
-                const opacity = learnedIds.includes(t.id) ? 'opacity-100 ring-1 ring-green-500' : 'opacity-90';
-                const check = learnedIds.includes(t.id) ? '<div class="absolute top-2 right-2 bg-green-500 text-black w-4 h-4 rounded-full flex items-center justify-center"><i data-lucide="check" class="w-3 h-3"></i></div>' : '';
-                container.innerHTML += `<div onclick="openModal('${t.id}')" class="tech-card-bg rounded-2xl p-4 border border-gray-700 hover:border-muayGold transition cursor-pointer flex flex-col justify-between h-32 relative group overflow-hidden ${opacity}">${check}<div class="absolute inset-0 opacity-0 group-hover:opacity-20 transition duration-500 bg-[url('${t.img}')] bg-cover bg-center z-0"></div><div class="relative z-10"><span class="text-[10px] text-muayGold font-bold uppercase tracking-wider mb-1 block">${t.category.replace('_', ' ')}</span><h4 class="font-bold text-lg text-white leading-tight">${t.name}</h4></div><div class="relative z-10 flex justify-between items-end mt-2"><div class="text-[10px] text-gray-400">Power: ${t.power}</div><i data-lucide="arrow-right-circle" class="w-5 h-5 text-gray-500 group-hover:text-muayGold transition"></i></div></div>`;
+
+            const filtered = techniquesData.filter(t => 
+                (filter === 'all' || t.category === filter) && 
+                (t.name.includes(searchQuery) || t.desc.includes(searchQuery))
+            );
+
+            // Filter logic for buttons class update
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.getAttribute('onclick').includes(filter)) {
+                    btn.classList.add('bg-muayGold', 'text-black', 'font-bold');
+                    btn.classList.remove('bg-gray-800', 'text-gray-400');
+                } else {
+                    btn.classList.remove('bg-muayGold', 'text-black', 'font-bold');
+                    btn.classList.add('bg-gray-800', 'text-gray-400');
+                }
+            });
+
+            filtered.forEach(t => {
+                const isLearned = learnedIds.includes(t.id);
+                const checkMark = isLearned ? `<div class="absolute top-2 right-2 bg-green-500 text-black w-4 h-4 rounded-full flex items-center justify-center shadow"><i data-lucide="check" class="w-3 h-3"></i></div>` : '';
+                const opacity = isLearned ? 'opacity-100 ring-1 ring-green-500/50' : 'opacity-90';
+                
+                container.innerHTML += `
+                    <div onclick="openModal('${t.id}')" class="tech-card-bg rounded-2xl p-4 border border-gray-700 hover:border-muayGold transition cursor-pointer flex flex-col justify-between h-32 relative group overflow-hidden ${opacity}">
+                        ${checkMark}
+                        <div class="absolute inset-0 opacity-0 group-hover:opacity-20 transition duration-500 bg-[url('${t.img}')] bg-cover bg-center z-0"></div>
+                        <div class="relative z-10"><span class="text-[10px] text-muayGold font-bold uppercase tracking-wider mb-1 block">${t.category.replace('_', ' ')}</span><h4 class="font-bold text-lg text-white leading-tight">${t.name}</h4></div>
+                        <div class="relative z-10 flex justify-between items-end mt-2"><div class="text-[10px] text-gray-400">Power: ${t.power}</div><i data-lucide="arrow-right-circle" class="w-5 h-5 text-gray-500 group-hover:text-muayGold transition"></i></div>
+                    </div>
+                `;
             });
             lucide.createIcons();
         }
-        function openModal(id) { const t = techniquesData.find(x=>x.id===id); if(!t)return; let l=JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS)||'[]'); if(!l.includes(id)){ l.push(id); localStorage.setItem(KEY_LEARNED_TECHS,JSON.stringify(l)); renderTechniques(); } document.getElementById('modalTitle').innerText=t.name; document.getElementById('modalDesc').innerText=t.desc; document.getElementById('modalImg').src=t.img; document.getElementById('infoModal').classList.remove('hidden'); }
+
+        function filterTechniques(cat) { renderTechniques(cat, document.getElementById('techSearch').value); }
+        function searchTechniques() { renderTechniques('all', document.getElementById('techSearch').value); }
+
+        function openModal(id) { 
+            const t = techniquesData.find(x => x.id === id); 
+            if(!t) return; 
+
+            document.getElementById('modalTitle').innerText = t.name;
+            document.getElementById('modalImg').src = t.img;
+            document.getElementById('statPower').innerText = t.power + '%';
+            document.getElementById('barPower').style.width = t.power + '%';
+            document.getElementById('statDiff').innerText = t.diff + '/100';
+            document.getElementById('barDiff').style.width = t.diff + '%';
+            
+            let catText = t.category === 'mae_mai' ? "แม่ไม้มวยไทย" : (t.category === 'luk_mai' ? "ลูกไม้มวยไทย" : "กลมวยแก้");
+            document.getElementById('modalTags').innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-muayGold text-black shadow-lg">${catText}</span>`;
+            
+            // Check if already learned
+            let learnedIds = JSON.parse(localStorage.getItem(KEY_LEARNED_TECHS) || '[]');
+            const savedAnalysis = JSON.parse(localStorage.getItem(KEY_TECH_ANALYSIS) || '{}');
+
+            document.getElementById('infoModal').classList.remove('hidden');
+            
+            // AI Analysis Logic
+            const descEl = document.getElementById('modalDesc');
+            const loadingEl = document.getElementById('aiLoading');
+            
+            if (savedAnalysis[id]) {
+                // If analyzed before, show immediately
+                descEl.innerText = savedAnalysis[id];
+                loadingEl.classList.add('hidden');
+            } else {
+                // If not, auto start analysis
+                descEl.innerText = "";
+                loadingEl.classList.remove('hidden');
+                
+                // Simulate AI Thinking
+                setTimeout(() => {
+                    loadingEl.classList.add('hidden');
+                    const fullText = `ชื่อท่า: ${t.name}\n\nคำอธิบาย:\n${t.desc}\n\nAI Analysis:\nท่านี้มีความรุนแรงระดับ ${t.power}% เหมาะสำหรับการใช้เมื่อคู่ต่อสู้เผลอหรือเสียหลัก จุดเด่นคือความรวดเร็วและความแม่นยำในการโจมตีจุดสำคัญ ควรฝึกฝนการทรงตัวให้มั่นคงก่อนใช้งานจริง`;
+                    
+                    // Typewriter
+                    let i = 0;
+                    const interval = setInterval(() => {
+                        descBox = document.getElementById('modalDesc'); // Re-select just in case
+                        if(descBox) {
+                            descBox.innerText += fullText.charAt(i);
+                            i++;
+                            if(i > fullText.length) {
+                                clearInterval(interval);
+                                // Save after finish
+                                savedAnalysis[id] = fullText;
+                                localStorage.setItem(KEY_TECH_ANALYSIS, JSON.stringify(savedAnalysis));
+                                
+                                // Mark as learned
+                                if(!learnedIds.includes(id)) {
+                                    learnedIds.push(id);
+                                    localStorage.setItem(KEY_LEARNED_TECHS, JSON.stringify(learnedIds));
+                                    renderTechniques(); // refresh badges
+                                }
+                            }
+                        } else clearInterval(interval);
+                    }, 20);
+                }, 1000);
+            }
+        }
         function closeModal() { document.getElementById('infoModal').classList.add('hidden'); }
-        function playDemoVideo() { alert('Loading video...'); }
-        function openMatchModal(id) { const m = currentMatches.find(x=>x.id==id); if(!m)return; document.getElementById('matchModalEvent').innerText=m.event; document.getElementById('matchRedName').innerText=m.red; document.getElementById('matchBlueName').innerText=m.blue; document.getElementById('matchDetailDate').innerText=m.date; document.getElementById('matchDetailTime').innerText=m.time; document.getElementById('matchDetailChannel').innerText=m.channel; document.getElementById('matchBarRed').style.width=m.ai_red+'%'; document.getElementById('matchBarRed').innerText=m.ai_red+'%'; document.getElementById('matchBarBlue').style.width=m.ai_blue+'%'; document.getElementById('matchBarBlue').innerText=m.ai_blue+'%'; document.getElementById('matchModal').classList.remove('hidden'); }
-        function closeMatchModal() { document.getElementById('matchModal').classList.add('hidden'); }
+        
         function loadUserData() {
             const logs = JSON.parse(localStorage.getItem(KEY_LOGS) || '[]');
             const now = new Date();
@@ -771,32 +632,17 @@
             document.getElementById('headerMonth').innerText = "LIVE";
             document.getElementById('headerDate').innerText = `${now.getDate()} | ${now.getFullYear()+543}`;
             document.getElementById('headerDay').innerText = `วัน${thaiDays[now.getDay()]}`;
-
-            // Initial Real Data (Displayed on First Load)
-            const initialMatches = [
-                { id: 13901, event: "ONE ลุมพินี 139 (คู่เอก)", red: "วรพล ลูกเจ้าพ่อโรงต้ม", blue: "ซอ ลิน อู", time: "19:30", date: "ศุกร์ 23 ม.ค. 2569", channel: "Ch7HD กด 35", ai_red: 55, ai_blue: 45, img: "https://placehold.co/600x300/111/FFF?text=ONE+Lumpinee+139" },
-                { id: 3901, event: "ONE Fight Night 39 (คู่เอก)", red: "แรมโบ้เล็ก ฉ.อจลบุญ", blue: "อับดุลลา ดายาคาเอฟ", time: "08:00", date: "เสาร์ 24 ม.ค. 2569", channel: "YouTube ONE", ai_red: 60, ai_blue: 40, img: "https://placehold.co/600x300/222/FFF?text=OFN+39" },
-                { id: 4001, event: "ONE Fight Night 40", red: "แจ็กกี บุนตัน", blue: "สเตลลา เฮเมตซ์เบอร์เกอร์", time: "08:00", date: "เสาร์ 14 ก.พ. 2569", channel: "YouTube ONE", ai_red: 52, ai_blue: 48, img: "https://placehold.co/600x300/333/FFF?text=OFN+40" }
-            ];
-
-            // Load Name
-            const savedName = localStorage.getItem(KEY_USER);
-            if(savedName) document.getElementById('profileName').innerText = savedName;
-
-            const saved = localStorage.getItem(KEY_MATCHES);
-            currentMatches = saved ? JSON.parse(saved) : initialMatches;
-            
-            // Set Hero Banner on Load based on current matches
-            if(currentMatches.length > 0) {
-                 const mainEvent = currentMatches[0];
-                 document.getElementById('heroEventTitle').innerText = mainEvent.event;
-                 document.getElementById('heroEventDesc').innerText = `${mainEvent.red} vs ${mainEvent.blue} | ศึกใหญ่ประจำสัปดาห์`;
-            }
-
-            renderSchedule(currentMatches);
         }
 
-        window.onload = () => { initData(); renderTechniques(); renderLeaderboard(); lucide.createIcons(); loadUserData(); };
+        window.onload = () => { 
+            initData(); 
+            renderTechniques(); 
+            renderLeaderboard(); 
+            lucide.createIcons(); 
+            const savedImg = localStorage.getItem(KEY_PROFILE_IMG);
+            if(savedImg) document.getElementById('profileImg').src = savedImg;
+            loadUserData();
+        };
     </script>
 </body>
 </html>
